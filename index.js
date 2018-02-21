@@ -220,6 +220,7 @@ module.exports = function (config) {
   var loadWaitMs = 1000 * config.loadDelay;
   var framesToCapture;
   var dimensions;
+  var stream = config.stream;
   var fps = config.fps, frameDuration;
   var outputPath = path.resolve(process.cwd(), config.output);
   var animationFrameDuration;
@@ -265,21 +266,32 @@ module.exports = function (config) {
     };
   }
   if (!fileNameConverter) {
-    fileNameConverter = function (num, maxNum) {
-      var outputPattern = '%0' + maxNum.toString().length + 'd.png';
-      return sprintf(outputPattern, num);
-    };
+    if (config.stream) {
+      fileNameConverter = function () {
+        return undefined;
+      }
+    } else {
+      fileNameConverter = function (num, maxNum) {
+        var outputPattern = '%0' + maxNum.toString().length + 'd.png';
+        return sprintf(outputPattern, num);
+      };
+    }
   }
 
   const log = function () {
     if (!config.quiet) {
-      // eslint-disable-next-line no-console
-      console.log.apply(this, arguments);
+      if (config.logToStdErr) {
+        // eslint-disable-next-line no-console
+        console.error.apply(this, arguments);
+      } else {
+        // eslint-disable-next-line no-console
+        console.log.apply(this, arguments);
+      }
     }
   };
 
   const launchOptions = {
-    dumpio: !config.quiet
+    dumpio: !config.quiet && !config.logToStdErr
   };
 
   return puppeteer.launch(launchOptions).then(function (browser) {
@@ -344,11 +356,21 @@ module.exports = function (config) {
         }, function () {
           return goToTime(browserFrames, delayMs + frameCount * frameDuration).then(function () {
             log('Capturing Frame ' + frameCount + '...');
-            var filePath = path.resolve(outputPath, fileNameConverter(frameCount, framesToCapture));
-            makeFileDirectoryIfNeeded(filePath);
+            var fileName = fileNameConverter(frameCount, framesToCapture);
+            var filePath;
+            if (fileName) {
+              filePath = path.resolve(outputPath, fileName);
+              makeFileDirectoryIfNeeded(filePath);
+            } else {
+              filePath = undefined;
+            }
             return page.screenshot({
               path: filePath,
               clip: screenshotClip
+            }).then(function (buffer) {
+              if (stream) {
+                stream.write(buffer);
+              }
             });
           });
         });
@@ -357,6 +379,12 @@ module.exports = function (config) {
       return browser.close();
     }).catch(function (err) {
       log(err);
+    }).then(function () {
+      // process.stdout and process.stderr can not be closed
+      // https://nodejs.org/api/process.html#process_a_note_on_process_i_o
+      if (stream && stream !== process.stdout && stream !== process.stderr) {
+        stream.end();
+      }
     });
   });
 };

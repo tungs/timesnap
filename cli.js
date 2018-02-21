@@ -38,12 +38,13 @@ const recorder = require('./index.js');
 commander
   .version('0.0.1-prerelease', '-v, --version')
   .usage('<url> [options]')
-  .option('-o, --output [path]', 'Save to directory. [./]', './')
+  .option('-o, --output [path]', 'Save to directory.', './')
   .option('-O, --output-pattern [pattern]', 'Save each file as a printf-style string (e.g. image-%03d.png)')
   .option('-R, --fps [frame rate]', 'Frames per second to capture (default: 60)', parseFloat)
   .option('-d, --duration [seconds]', 'Duration of capture, in seconds (default: 5)', parseFloat)
   .option('-f, --frames [count]', 'Number of frames to capture', parseInt)
   .option('-S, --selector [selector]', 'CSS Selector of item to capture')
+  .option('--stdout', 'Output images to stdout')
   .option('-V, --viewport [dimensions]', 'Viewport dimensions, in pixels (e.g. 800,600)', function (str) {
     var dims = str.split(',').map(function (d) { return parseInt(d); });
     return dims.length > 1 ? { width: dims[0], height: dims[1] } : { width: dims[0] };
@@ -57,9 +58,20 @@ commander
   .option('-r, --right [pixels]', 'right edge of capture, in pixels', parseInt)
   .option('-t, --top [pixels]', 'top edge of capture, in pixels. Equivalent to --y-offset', parseInt)
   .option('-b, --bottom [pixels]', 'bottom edge of capture, in pixels', parseInt)
-  .option('-L, --load-delay [n seconds]', 'Wait n real seconds after loading.', parseFloat, 0)
+  .option('--load-delay [n seconds]', 'Wait n real seconds after loading.', parseFloat, 0)
   .option('-q, --quiet', 'Suppress console logging')
   .parse(process.argv);
 
 commander.url = commander.args[0];
-recorder(commander);
+
+var stream;
+if (commander.stdout) {
+  stream = process.stdout;
+}
+
+var config = Object.assign({}, commander, {
+  logToStdErr: commander.stdout ? true : false,
+  stream: stream
+});
+
+recorder(config);
