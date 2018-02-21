@@ -49,7 +49,7 @@ commander
     var dims = str.split(',').map(function (d) { return parseInt(d); });
     return dims.length > 1 ? { width: dims[0], height: dims[1] } : { width: dims[0] };
   })
-  .option('-s, --start [n seconds]', 'Runs code for n virtual seconds before saving any frames. [0]', parseFloat, 0)
+  .option('-s, --start [n seconds]', 'Runs code for n virtual seconds before saving any frames.', parseFloat, 0)
   .option('-x, --x-offset [pixels]', 'X offset of capture, in pixels', parseFloat, 0)
   .option('-y, --y-offset [pixels]', 'Y offset of capture, in pixels', parseFloat, 0)
   .option('-W, --width [pixels]', 'Width of capture, in pixels', parseInt)

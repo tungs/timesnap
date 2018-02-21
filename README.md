@@ -1,4 +1,4 @@
-# <a name="timesnap" href="#timesnap">#</a> timesnap
+# timesnap
 
 **timesnap** is a node.js program that uses [puppeteer](https://github.com/GoogleChrome/puppeteer) to open a web page, overwrite its time-handling functions, and record screenshots in virtual time. For some web pages, this allows frames to be recorded slower than real time, while appearing smooth and consistent when recreated into a movie.
 
@@ -27,7 +27,7 @@ cd /path/to/installation/directory
 npm install timesnap
 ```
 
-### <a name="cli-use-and-options" href="#cli-use-and-options">#</a> Use and Options
+### <a name="cli-use-and-options" href="#cli-use-and-options">#</a> Command Line Use and Options
 
 #### <a name="cli-global-install-use" href="#cli-global-install-use">#</a> Global Install
 ```
@@ -39,21 +39,58 @@ timesnap "url" [options]
 node /path/to/installation/directory/node_modules/timesnap/cli.js "url" [options]
 ```
 
-#### <a name="cli-url-use" href="#cli-url-use">#</a> url
+#### <a name="cli-url-use" href="#cli-url-use">#</a> Command Line *url*
 The url can be a web url (e.g. `https://github.com`) or a relative path to the current working directory (e.g. `index.html`). If no url is specified, defaults to `index.html`. For urls with special characters (like `&`), enclose the urls with quotes.
 
-#### <a name="cli-options" href="#cli-options">#</a> options
-TBD
+#### <a name="cli-options" href="#cli-options">#</a> Command Line *options*
+* <a name="cli-options-output-directory" href="#cli-options-output-directory">#</a> `-o`, `--output-directory` *directory*
+    * Saves images to a *directory* (default './').
+* <a name="cli-options-output-pattern" href="#cli-options-output-pattern">#</a> `-O`, `--output-pattern` *pattern*
+    * Save each file to a *pattern* as a printf-style string (e.g. `image-%03d.png`).
+* <a name="cli-options-fps" href="#cli-options-fps">#</a> `-R`, `--fps` *frame rate*
+    * *frame rate* (in frames per virtual second) of capture (default: 60).
+* <a name="cli-options-duration" href="#cli-options-duration">#</a> `-d`, `--duration` *seconds*
+    * Duration of capture, in *seconds* (default: 5).
+* <a name="cli-options-frames" href="#cli-options-frames">#</a> `-f`, `--frames` *count*
+    * Number of frames to capture.
+* <a name="cli-options-selector" href="#cli-options-selector">#</a> `-S`, `--selector` *selector*
+    * CSS *selector* of item to capture.
+* <a name="cli-options-stdout" href="#cli-options-stdout">#</a> `--stdout`
+    * Output images to stdout.
+* <a name="cli-options-viewport" href="#cli-options-viewport">#</a> `-V`, `--viewport` *dimensions*
+    * Viewport dimensions, in pixels. For example `800` (for width) or `800,600` (for width and height).
+* <a name="cli-options-start" href="#cli-options-start">#</a> `-s`, `--start` *n seconds*
+    * Runs code for n virtual seconds before saving any frames (default: 0).
+* <a name="cli-options-x-offset" href="#cli-options-x-offset">#</a> `-x`, `--x-offset` *pixels*
+    * X offset of capture, in pixels (default: 0).
+* <a name="cli-options-y-offset" href="#cli-options-y-offset">#</a> `-y`, `--y-offset` *pixels*
+    * Y offset of capture, in pixels (default: 0).
+* <a name="cli-options-width" href="#cli-options-width">#</a> `-W`, `--width` *pixels*
+    * Width of capture, in pixels.
+* <a name="cli-options-height" href="#cli-options-height">#</a> `-H`, `--height` *pixels*
+    * Height of capture, in pixels.
+* <a name="cli-options-left" href="#cli-options-left">#</a> `-l`, `--left` *pixels*
+    * Left edge of capture, in pixels. Equivalent to `--x-offset`.
+* <a name="cli-options-right" href="#cli-options-right">#</a> `-l`, `--right` *pixels*
+    * Right edge of capture, in pixels.
+* <a name="cli-options-top" href="#cli-options-top">#</a> `-t`, `--top` *pixels*
+    * Top edge of capture, in pixels. Equivalent to `--y-offset`.
+* <a name="cli-options-bottom" href="#cli-options-bottom">#</a> `-b`, `--bottom` *pixels*
+    * Bottom edge of capture, in pixels.
+* <a name="cli-options-load-delay" href="#cli-options-load-delay">#</a> `--load-delay` *n seconds*
+    * Wait *n real seconds* after loading.
+* <a name="cli-options-quiet" href="#cli-options-quiet">#</a> `-q`, `--quiet`
+    * Suppress console logging.
 
 ## <a name="node-use" href="#node-use">#</a> From node.js
 **timesnap** can also be included as a library inside node.js programs.
 
-### <a name="node-install" href="#node-install">#</a> Install
+### <a name="node-install" href="#node-install">#</a> Node Install
 ```
 npm install timesnap --save-prod
 ```
 
-### <a name="node-use-and-options" href="#cli-use-and-options">#</a> Use and Options
+### <a name="node-use" href="#node-use">#</a> Node Use
 ```
 const timesnap = require('timesnap');
 timesnap({
@@ -65,7 +102,7 @@ timesnap({
 });
 ```
 
-#### <a name="node-api" href="#node-api">#</a> Node API
+### <a name="node-api" href="#node-api">#</a> Node API
 TBD
 
 ## <a name="how-it-works" href="#how-it-works">#</a> How it works
