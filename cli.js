@@ -38,7 +38,7 @@ const recorder = require('./index.js');
 commander
   .version('0.0.1-prerelease', '-v, --version')
   .usage('<url> [options]')
-  .option('-o, --output [path]', 'Save to directory.', './')
+  .option('-o, --output-directory [path]', 'Save to directory.', './')
   .option('-O, --output-pattern [pattern]', 'Save each file as a printf-style string (e.g. image-%03d.png)')
   .option('-R, --fps [frame rate]', 'Frames per second to capture (default: 60)', parseFloat)
   .option('-d, --duration [seconds]', 'Duration of capture, in seconds (default: 5)', parseFloat)

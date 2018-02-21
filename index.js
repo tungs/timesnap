@@ -222,7 +222,7 @@ module.exports = function (config) {
   var dimensions;
   var stream = config.stream;
   var fps = config.fps, frameDuration;
-  var outputPath = path.resolve(process.cwd(), config.output);
+  var outputPath = path.resolve(process.cwd(), config.outputDirectory);
   var animationFrameDuration;
   var browserFrames;
 
