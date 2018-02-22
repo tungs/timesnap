@@ -330,8 +330,8 @@ module.exports = function (config) {
         browserFrames = getBrowserFrames(page.mainFrame());
         var frameCount = 0;
         var viewport = page.viewport();
-        var x = config.x || config.left || 0;
-        var y = config.y || config.top || 0;
+        var x = config.xOffset || config.left || 0;
+        var y = config.yOffset || config.top || 0;
         var right = config.right || 0;
         var bottom = config.bottom || 0;
         var width;
