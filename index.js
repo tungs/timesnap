@@ -215,14 +215,14 @@ const makeFileDirectoryIfNeeded = function (filepath) {
 
 module.exports = function (config) {
   config = Object.assign({ 'url': 'index.html' }, config || {});
-  var url = config.url || 'index.html';
+  var url = config.url;
   var delayMs = 1000 * config.start;
   var loadWaitMs = 1000 * config.loadDelay;
   var framesToCapture;
   var dimensions;
   var stream = config.stream;
   var fps = config.fps, frameDuration;
-  var outputPath = path.resolve(process.cwd(), config.outputDirectory);
+  var outputPath = path.resolve(process.cwd(), (config.outputDirectory || './'));
   var animationFrameDuration;
   var browserFrames;
 
@@ -266,7 +266,7 @@ module.exports = function (config) {
     };
   }
   if (!fileNameConverter) {
-    if (config.stream) {
+    if (config.stream && !config.outputDirectory) {
       fileNameConverter = function () {
         return undefined;
       }
