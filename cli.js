@@ -38,7 +38,7 @@ const recorder = require('./index.js');
 commander
   .version('0.0.1-prerelease', '-v, --version')
   .usage('<url> [options]')
-  .option('-o, --output-directory [path]', 'Save to directory.', './')
+  .option('-o, --output-directory [path]', 'Save to directory. (default: ./)')
   .option('-O, --output-pattern [pattern]', 'Save each file as a printf-style string (e.g. image-%03d.png)')
   .option('-R, --fps [frame rate]', 'Frames per second to capture (default: 60)', parseFloat)
   .option('-d, --duration [seconds]', 'Duration of capture, in seconds (default: 5)', parseFloat)
@@ -49,6 +49,7 @@ commander
     var dims = str.split(',').map(function (d) { return parseInt(d); });
     return dims.length > 1 ? { width: dims[0], height: dims[1] } : { width: dims[0] };
   })
+  .option('--transparent-background', 'Allow transparent backgrounds (for pngs)')
   .option('-s, --start [n seconds]', 'Runs code for n virtual seconds before saving any frames.', parseFloat, 0)
   .option('-x, --x-offset [pixels]', 'X offset of capture, in pixels', parseFloat, 0)
   .option('-y, --y-offset [pixels]', 'Y offset of capture, in pixels', parseFloat, 0)
@@ -64,14 +65,24 @@ commander
 
 commander.url = commander.args[0];
 
-var stream;
+var processor;
 if (commander.stdout) {
-  stream = process.stdout;
+  process.stdout.on('error', function (err) {
+    if (!commander.quiet) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+    }
+    process.exit(1);
+  });
+  processor = function (buffer) {
+    process.stdout.write(buffer);
+  };
 }
 
 var config = Object.assign({}, commander, {
   logToStdErr: commander.stdout ? true : false,
-  stream: stream
+  processor: processor
 });
 
 recorder(config);
+// normally we need should close a stream after it is done but in this case, process.stdout should not be closed
