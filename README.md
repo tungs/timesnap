@@ -4,7 +4,7 @@
 
 You can use **timesnap** from the command line or as a Node.js library.
 
-## <a name="limitations" href="#limitations">#</a> timesnap Limitations
+## <a name="limitations" href="#limitations">#</a> **timesnap** Limitations
 **timesnap** only overwrites JavaScript functions, so pages where changes occur via other means (e.g. through video or transitions/animations from css rules) will likely not render as intended.
 
 ## Read Me Contents
