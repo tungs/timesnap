@@ -3,6 +3,10 @@
   "version": "0.0.1-prerelease",
   "description": "",
   "author": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tungs/timesnap"
+  },
   "engines": {
     "node": ">=6.4.0"
   },

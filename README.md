@@ -52,25 +52,25 @@ The url can be a web url (e.g. `https://github.com`) or a relative path to the c
 
 ### <a name="cli-examples" href="#cli-examples">#</a> Command Line Examples
 
-**default behavior**:
+**Default behavior**:
 ```
 timesnap
 ```
 Opens `index.html` in the current working directory, sets the viewport to 800x600, captures at 60 frames per second for 5 virtual seconds, and saves the frames to `001.png` to `300.png` in current working directory. The defaults may change in the future, so for longer term scripting, it's a good idea to explicitly pass those options, like in the following example.
 
-**setting viewport size, frames per second, duration, and output-pattern**:
+**Setting viewport size, frames per second, duration, and output-pattern**:
 ```
 timesnap index.html --viewport 800,600 --fps 60 --duration 5 --output-pattern "%03d.png"
 ```
 Equivalent to the default `timesnap` invocation, but with explicit options. Opens `index.html` in the current working directory, sets the viewport to 800x600, captures at 60 frames per second for 5 virtual seconds, and saves the frames to `001.png` to `300.png` in current working directory.
 
-**using a selector**:
+**Using a selector**:
 ```
 timesnap drawing.html -S canvas,svg
 ```
 Opens `drawing.html` in the current working directory, crops each frame to the bounding box of the first canvas or svg element, and captures frames using default settings (5 seconds @ 60fps saving to `001.png`... `300.png`).
 
-**using offsets**:
+**Using offsets**:
 ```
 timesnap "https://tungs.github.io/truchet-tiles-original/#autoplay=true&switchStyle=random" \ 
   -S "#container" \ 
@@ -79,7 +79,7 @@ timesnap "https://tungs.github.io/truchet-tiles-original/#autoplay=true&switchSt
 ```
 Opens https://tungs.github.io/truchet-tiles-original/ with the appropriate fragment url (note the quotes in the url are necessary because of the `&`). Crops each frame to the `#container` element, with an additional crop of 20px, 40px, 6px, and 30px for the left, top, right, and bottom, respectively. Captures frames for 20 virtual seconds at 60fps to `0001.png`... `1200.png` in the current working directory.
 
-**piping**:
+**Piping**:
 ```
 timesnap https://breathejs.org/examples/Drawing-US-Counties.html \
   -V 1920,1080 -S "#draw-canvas" --fps 60 --duration 10 \
@@ -174,7 +174,7 @@ There are a few options for the Node API that are not accessible through the com
     * <a name="js-config-y-offset" href="#js-config-y-offset">#</a> `yOffset` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Y offset of capture, in pixels (default: 0).
     * <a name="js-config-width" href="#js-config-width">#</a> `width` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Width of capture, in pixels.
     * <a name="js-config-height" href="#js-config-height">#</a> `height` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Height of capture, in pixels.
-    * <a name="js-config-even-width" href="#js-config-even-width">#</a> &lt;[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type)&gt; Rounds width up to the nearest even number.
+    * <a name="js-config-even-width" href="#js-config-even-width">#</a> `evenWidth` &lt;[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type)&gt; Rounds width up to the nearest even number.
     * <a name="js-config-left" href="#js-config-left">#</a> `left` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Left edge of capture, in pixels. Equivalent to `config.xOffset`.
     * <a name="js-config-right" href="#js-config-right">#</a> `right` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Right edge of capture, in pixels. Ignored if `width` is specified.
     * <a name="js-config-top" href="#js-config-top">#</a> `top` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Top edge of capture, in pixels. Equivalent to `config.yOffset`.
