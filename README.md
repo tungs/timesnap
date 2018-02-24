@@ -72,13 +72,18 @@ Opens `drawing.html` in the current working directory, crops each frame to the b
 
 **using offsets**:
 ```
-timesnap "https://tungs.github.io/truchet-tiles-original/#autoplay=true&switchStyle=random&autoplayDelayIndex=4&switchSpeedIndex=7" -S "#container" --left 20 --top 40 --right 6 --bottom 30 --duration 20 
+timesnap "https://tungs.github.io/truchet-tiles-original/#autoplay=true&switchStyle=random" \ 
+  -S "#container" \ 
+  --left 20 --top 40 --right 6 --bottom 30 \
+  --duration 20
 ```
 Opens https://tungs.github.io/truchet-tiles-original/ with the appropriate fragment url (note the quotes in the url are necessary because of the `&`). Crops each frame to the `#container` element, with an additional crop of 20px, 40px, 6px, and 30px for the left, top, right, and bottom, respectively. Captures frames for 20 virtual seconds at 60fps to `0001.png`... `1200.png` in the current working directory.
 
 **piping**:
 ```
-timesnap https://breathejs.org/examples/Drawing-US-Counties.html -V 1920,1080 -S "#draw-canvas" --fps 60 --duration 10 --even-width --stdout | ffmpeg -framerate 60 -i pipe:0 -y -pix_fmt yuv420p movie.mp4
+timesnap https://breathejs.org/examples/Drawing-US-Counties.html \
+  -V 1920,1080 -S "#draw-canvas" --fps 60 --duration 10 \
+  --even-width --stdout | ffmpeg -framerate 60 -i pipe:0 -y -pix_fmt yuv420p movie.mp4
 ```
 Opens https://breathejs.org/examples/Drawing-US-Counties.html, sets the viewport size to 1920x1080, crops each frame to the bounding box of #draw-canvas and records at 60 frames per second for ten virtual seconds and pipes the output to ffmpeg, which reads in the data from stdin, encodes the frames, and saves the result as `movie.mp4` in the current working directory. Does not save individual frames to disk. Uses the `--even-width` option to ensure the width of the frames is an even number, which ffmpeg requires for certain encodings.
 
@@ -87,7 +92,7 @@ Opens https://breathejs.org/examples/Drawing-US-Counties.html, sets the viewport
     * Saves images to a *directory* (default './').
 * <a name="cli-options-output-pattern" href="#cli-options-output-pattern">#</a> Output Pattern: `-O`, `--output-pattern` *pattern*
     * Save each file to a *pattern* as a printf-style string (e.g. `image-%03d.png`).
-* <a name="cli-options-fps" href="#cli-options-fps">#</a> fps: `-R`, `--fps` *frame rate*
+* <a name="cli-options-fps" href="#cli-options-fps">#</a> Frame Rate: `-R`, `--fps` *frame rate*
     * *frame rate* (in frames per virtual second) of capture (default: 60).
 * <a name="cli-options-duration" href="#cli-options-duration">#</a> Duration: `-d`, `--duration` *seconds*
     * Duration of capture, in *seconds* (default: 5).
@@ -109,6 +114,8 @@ Opens https://breathejs.org/examples/Drawing-US-Counties.html, sets the viewport
     * Width of capture, in pixels.
 * <a name="cli-options-height" href="#cli-options-height">#</a> Height: `-H`, `--height` *pixels*
     * Height of capture, in pixels.
+* <a name="cli-options-even-width" href="#cli-options-width">#</a> Even Width: `--even-width`
+    * Rounds width up to the nearest even number.
 * <a name="cli-options-left" href="#cli-options-left">#</a> Left: `-l`, `--left` *pixels*
     * Left edge of capture, in pixels. Equivalent to `--x-offset`.
 * <a name="cli-options-right" href="#cli-options-right">#</a> Right: `-r`, `--right` *pixels*
@@ -122,8 +129,8 @@ Opens https://breathejs.org/examples/Drawing-US-Counties.html, sets the viewport
 * <a name="cli-options-quiet" href="#cli-options-quiet">#</a> Quiet: `-q`, `--quiet`
     * Suppress console logging.
 
-## <a name="node-use" href="#node-use">#</a> From node.js
-**timesnap** can also be included as a library inside node.js programs.
+## <a name="node-use" href="#node-use">#</a> From Node.js
+**timesnap** can also be included as a library inside Node.js programs.
 
 ### <a name="node-install" href="#node-install">#</a> Node Install
 ```
@@ -153,7 +160,7 @@ There are a few options for the Node API that are not accessible through the com
     * <a name="js-config-output-pattern" href="#js-config-output-pattern">#</a> `outputPattern` &lt;[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type)&gt; Save each file to a pattern as a printf-style string (e.g. `image-%03d.png`)
     * <a name="js-config-fps" href="#js-config-fps">#</a> `fps` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; frame rate, in frames per virtual second, of capture (default: 60).
     * <a name="js-config-duration" href="#js-config-duration">#</a> `duration` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Duration of capture, in seconds (default: 5).
-    * <a name="js-config-frames" href="#js-config-frames">#</a> `frames` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Number of frames to capture. Overrides default fps or default duration. 
+    * <a name="js-config-frames" href="#js-config-frames">#</a> `frames` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Number of frames to capture. Overrides default fps or default duration.
     * <a name="js-config-selector" href="#js-config-selector">#</a> `selector` &lt;[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type)&gt; [CSS selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) of item to capture.
     * <a name="js-config-viewport" href="#js-config-viewport">#</a> `viewport` &lt;[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)&gt;
         * <a name="js-config-viewport-width" href="#js-config-viewport-width">#</a> `width` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Width of viewport.
@@ -167,6 +174,7 @@ There are a few options for the Node API that are not accessible through the com
     * <a name="js-config-y-offset" href="#js-config-y-offset">#</a> `yOffset` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Y offset of capture, in pixels (default: 0).
     * <a name="js-config-width" href="#js-config-width">#</a> `width` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Width of capture, in pixels.
     * <a name="js-config-height" href="#js-config-height">#</a> `height` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Height of capture, in pixels.
+    * <a name="js-config-even-width" href="#js-config-even-width">#</a> &lt;[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type)&gt; Rounds width up to the nearest even number.
     * <a name="js-config-left" href="#js-config-left">#</a> `left` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Left edge of capture, in pixels. Equivalent to `config.xOffset`.
     * <a name="js-config-right" href="#js-config-right">#</a> `right` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Right edge of capture, in pixels. Ignored if `width` is specified.
     * <a name="js-config-top" href="#js-config-top">#</a> `top` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Top edge of capture, in pixels. Equivalent to `config.yOffset`.

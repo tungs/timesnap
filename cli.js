@@ -82,7 +82,7 @@ if (commander.stdout) {
 
 var config = Object.assign({}, commander, {
   logToStdErr: commander.stdout ? true : false,
-  processor: processor
+  frameProcessor: processor
 });
 
 recorder(config);

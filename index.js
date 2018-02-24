@@ -220,7 +220,7 @@ module.exports = function (config) {
   var loadWaitMs = 1000 * (config.loadDelay || 0);
   var framesToCapture;
   var dimensions;
-  var processor = config.processor;
+  var frameProcessor = config.frameProcessor;
   var frameNumToTime = config.frameNumToTime;
   var fps = config.fps, frameDuration;
   var outputPath = path.resolve(process.cwd(), (config.outputDirectory || './'));
@@ -272,7 +272,7 @@ module.exports = function (config) {
       fileNameConverter = function (num) {
         return sprintf(config.outputPattern, num);
       };
-    } else if (config.processor && !config.outputDirectory) {
+    } else if (frameProcessor && !config.outputDirectory) {
       fileNameConverter = function () {
         return undefined;
       };
@@ -379,8 +379,8 @@ module.exports = function (config) {
               clip: screenshotClip,
               omitBackground: config.transparentBackground ? true : false
             }).then(function (buffer) {
-              if (processor) {
-                return processor(buffer, frameCount, framesToCapture);
+              if (frameProcessor) {
+                return frameProcessor(buffer, frameCount, framesToCapture);
               }
             });
           });
