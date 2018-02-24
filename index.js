@@ -275,7 +275,7 @@ module.exports = function (config) {
     } else if (config.processor && !config.outputDirectory) {
       fileNameConverter = function () {
         return undefined;
-      }
+      };
     } else {
       fileNameConverter = function (num, maxNum) {
         var outputPattern = '%0' + maxNum.toString().length + 'd.png';
@@ -350,6 +350,10 @@ module.exports = function (config) {
         } else {
           width = config.width || (viewport.width - x - right);
           height = config.height || (viewport.height - y - bottom);
+        }
+        width = Math.ceil(width);
+        if (config.evenWidth && (width % 2 === 1)) {
+          width++;
         }
         var screenshotClip = {
           x: x,

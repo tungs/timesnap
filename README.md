@@ -78,9 +78,9 @@ Opens https://tungs.github.io/truchet-tiles-original/ with the appropriate fragm
 
 **piping**:
 ```
-timesnap https://breathejs.org/examples/Drawing-US-Counties.html -V 1920,1080 -S "#draw-canvas" --fps 60 --duration 10 --stdout | ffmpeg -framerate 60 -i pipe:0 -y -pix_fmt yuv420p movie.mp4
+timesnap https://breathejs.org/examples/Drawing-US-Counties.html -V 1920,1080 -S "#draw-canvas" --fps 60 --duration 10 --even-width --stdout | ffmpeg -framerate 60 -i pipe:0 -y -pix_fmt yuv420p movie.mp4
 ```
-Opens https://breathejs.org/examples/Drawing-US-Counties.html, sets the viewport size to 1920x1080, crops each frame to the bounding box of #draw-canvas and records at 60 frames per second for ten virtual seconds and pipes the output to ffmpeg, which reads in the data from stdin, encodes the frames, and saves the result as `movie.mp4` in the current working directory. Does not save individual frames to disk.
+Opens https://breathejs.org/examples/Drawing-US-Counties.html, sets the viewport size to 1920x1080, crops each frame to the bounding box of #draw-canvas and records at 60 frames per second for ten virtual seconds and pipes the output to ffmpeg, which reads in the data from stdin, encodes the frames, and saves the result as `movie.mp4` in the current working directory. Does not save individual frames to disk. Uses the `--even-width` option to ensure the width of the frames is an even number, which ffmpeg requires for certain encodings.
 
 ### <a name="cli-options" href="#cli-options">#</a> Command Line *options*
 * <a name="cli-options-output-directory" href="#cli-options-output-directory">#</a> Output Directory: `-o`, `--output-directory` *directory*
