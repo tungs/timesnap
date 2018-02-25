@@ -52,25 +52,25 @@ The url can be a web url (e.g. `https://github.com`) or a relative path to the c
 
 ### <a name="cli-examples" href="#cli-examples">#</a> Command Line Examples
 
-**<a name="cli-example-default" href="#cli-example-default"> Default behavior**:
+**<a name="cli-example-default" href="#cli-example-default">#</a> Default behavior**:
 ```
 timesnap
 ```
 Opens `index.html` in the current working directory, sets the viewport to 800x600, captures at 60 frames per second for 5 virtual seconds, and saves the frames to `001.png` to `300.png` in current working directory. The defaults may change in the future, so for longer term scripting, it's a good idea to explicitly pass those options, like in the following example.
 
-**<a name="cli-example-viewport-fps-duration-output" href="#cli-example-viewport-fps-duration-output"> Setting viewport size, frames per second, duration, and output-pattern**:
+**<a name="cli-example-viewport-fps-duration-output" href="#cli-example-viewport-fps-duration-output">#</a> Setting viewport size, frames per second, duration, and output-pattern**:
 ```
 timesnap index.html --viewport 800,600 --fps 60 --duration 5 --output-pattern "%03d.png"
 ```
 Equivalent to the default `timesnap` invocation, but with explicit options. Opens `index.html` in the current working directory, sets the viewport to 800x600, captures at 60 frames per second for 5 virtual seconds, and saves the frames to `001.png` to `300.png` in current working directory.
 
-**<a name="cli-example-selector" href="#cli-example-selector"> Using a selector**:
+**<a name="cli-example-selector" href="#cli-example-selector">#</a> Using a selector**:
 ```
 timesnap drawing.html -S canvas,svg
 ```
 Opens `drawing.html` in the current working directory, crops each frame to the bounding box of the first canvas or svg element, and captures frames using default settings (5 seconds @ 60fps saving to `001.png`... `300.png`).
 
-**<a name="cli-example-offsets" href="#cli-example-offsets"> Using offsets**:
+**<a name="cli-example-offsets" href="#cli-example-offsets">#</a> Using offsets**:
 ```
 timesnap "https://tungs.github.io/truchet-tiles-original/#autoplay=true&switchStyle=random" \ 
   -S "#container" \ 
@@ -79,7 +79,7 @@ timesnap "https://tungs.github.io/truchet-tiles-original/#autoplay=true&switchSt
 ```
 Opens https://tungs.github.io/truchet-tiles-original/ with the appropriate fragment url (note the quotes in the url are necessary because of the `&`). Crops each frame to the `#container` element, with an additional crop of 20px, 40px, 6px, and 30px for the left, top, right, and bottom, respectively. Captures frames for 20 virtual seconds at 60fps to `0001.png`... `1200.png` in the current working directory.
 
-**<a name="cli-example-pipe" href="#cli-example-pipe">#</a> Piping**:
+**<a name="cli-example-piping" href="#cli-example-piping">#</a> Piping**:
 ```
 timesnap https://breathejs.org/examples/Drawing-US-Counties.html \
   -V 1920,1080 -S "#draw-canvas" --fps 60 --duration 10 \
