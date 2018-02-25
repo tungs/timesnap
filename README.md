@@ -52,25 +52,25 @@ The url can be a web url (e.g. `https://github.com`) or a relative path to the c
 
 ### <a name="cli-examples" href="#cli-examples">#</a> Command Line Examples
 
-**Default behavior**:
+**<a name="cli-example-default" href="#cli-example-default"> Default behavior**:
 ```
 timesnap
 ```
 Opens `index.html` in the current working directory, sets the viewport to 800x600, captures at 60 frames per second for 5 virtual seconds, and saves the frames to `001.png` to `300.png` in current working directory. The defaults may change in the future, so for longer term scripting, it's a good idea to explicitly pass those options, like in the following example.
 
-**Setting viewport size, frames per second, duration, and output-pattern**:
+**<a name="cli-example-viewport-fps-duration-output" href="#cli-example-viewport-fps-duration-output"> Setting viewport size, frames per second, duration, and output-pattern**:
 ```
 timesnap index.html --viewport 800,600 --fps 60 --duration 5 --output-pattern "%03d.png"
 ```
 Equivalent to the default `timesnap` invocation, but with explicit options. Opens `index.html` in the current working directory, sets the viewport to 800x600, captures at 60 frames per second for 5 virtual seconds, and saves the frames to `001.png` to `300.png` in current working directory.
 
-**Using a selector**:
+**<a name="cli-example-selector" href="#cli-example-selector"> Using a selector**:
 ```
 timesnap drawing.html -S canvas,svg
 ```
 Opens `drawing.html` in the current working directory, crops each frame to the bounding box of the first canvas or svg element, and captures frames using default settings (5 seconds @ 60fps saving to `001.png`... `300.png`).
 
-**Using offsets**:
+**<a name="cli-example-offsets" href="#cli-example-offsets"> Using offsets**:
 ```
 timesnap "https://tungs.github.io/truchet-tiles-original/#autoplay=true&switchStyle=random" \ 
   -S "#container" \ 
@@ -79,7 +79,7 @@ timesnap "https://tungs.github.io/truchet-tiles-original/#autoplay=true&switchSt
 ```
 Opens https://tungs.github.io/truchet-tiles-original/ with the appropriate fragment url (note the quotes in the url are necessary because of the `&`). Crops each frame to the `#container` element, with an additional crop of 20px, 40px, 6px, and 30px for the left, top, right, and bottom, respectively. Captures frames for 20 virtual seconds at 60fps to `0001.png`... `1200.png` in the current working directory.
 
-**Piping**:
+**<a name="cli-example-pipe" href="#cli-example-pipe">#</a> Piping**:
 ```
 timesnap https://breathejs.org/examples/Drawing-US-Counties.html \
   -V 1920,1080 -S "#draw-canvas" --fps 60 --duration 10 \
@@ -128,6 +128,10 @@ Opens https://breathejs.org/examples/Drawing-US-Counties.html, sets the viewport
     * Wait *n real seconds* after loading.
 * <a name="cli-options-quiet" href="#cli-options-quiet">#</a> Quiet: `-q`, `--quiet`
     * Suppress console logging.
+* <a name="cli-options-version" href="#cli-options-version">#</a> Version: `v`, `--version`
+    * Display version information. Immediately exits.
+* <a name="cli-options-help" href="#cli-options-help">#</a> Version: `h`, `--help`
+    * Display command line options. Immediately exits.
 
 ## <a name="node-use" href="#node-use">#</a> From Node.js
 **timesnap** can also be included as a library inside Node.js programs.
@@ -137,7 +141,7 @@ Opens https://breathejs.org/examples/Drawing-US-Counties.html, sets the viewport
 npm install timesnap --save
 ```
 
-### <a name="node-examples" href="#node-use">#</a> Node Examples
+### <a name="node-examples" href="#node-examples">#</a> Node Examples
 ```
 const timesnap = require('timesnap');
 timesnap({
@@ -151,7 +155,7 @@ timesnap({
 
 ### <a name="node-api" href="#node-api">#</a> Node API
 
-There are a few options for the Node API that are not accessible through the command line interface: `config.logToStdErr`, and `config.processor`.
+There are a few options for the Node API that are not accessible through the command line interface: `config.logToStdErr`, and `config.frameProcessor`.
 
 **timesnap(config)**
 *  <a name="js-api-config" href="#js-api-config">#</a> `config` &lt;[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)&gt;
@@ -182,7 +186,7 @@ There are a few options for the Node API that are not accessible through the com
     * <a name="js-config-load-delay" href="#js-config-load-delay">#</a> `loadDelay` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Wait `config.loadDelay` real seconds after loading (default: 0).
     * <a name="js-config-quiet" href="#js-config-quiet">#</a> `quiet` &lt;[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type)&gt; Suppress console logging.
     * <a name="js-config-log-to-std-err" href="#js-config-log-to-std-err">#</a> `logToStdErr` &lt;[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type)&gt; Log to stderr instead of stdout. Doesn't do anything if `config.quiet` is set to true.
-    * <a name="js-config-processor" href="#js-config-processor">#</a> `processor` &lt;[function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function)([Buffer](https://nodejs.org/api/buffer.html#buffer_class_buffer), [number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type), [number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type))&gt; A function that will be called after capturing each frame. If `config.outputDirectory` and `config.outputPattern` aren't specified, enabling this suppresses automatic file output. After capturing each frame, `config.processor` is called with three arguments, and if it returns a promise, capture will be paused until the promise resolves:
+    * <a name="js-config-frame-processor" href="#js-config-frame-processor">#</a> `frameProcessor` &lt;[function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function)([Buffer](https://nodejs.org/api/buffer.html#buffer_class_buffer), [number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type), [number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type))&gt; A function that will be called after capturing each frame. If `config.outputDirectory` and `config.outputPattern` aren't specified, enabling this suppresses automatic file output. After capturing each frame, `config.frameProcessor` is called with three arguments, and if it returns a promise, capture will be paused until the promise resolves:
         * `screenshotData` &lt;[Buffer](https://nodejs.org/api/buffer.html#buffer_class_buffer)&gt; a buffer of the screenshot data.
         * `frameNumber` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; The current frame number (1 based).
         * `totalFrames` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; The total number of frames.
