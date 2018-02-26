@@ -2,7 +2,7 @@
 
 **timesnap** is a Node.js program that saves sequential snapshots of web pages at precise virtual times. It uses [puppeteer](https://github.com/GoogleChrome/puppeteer) to open a web page, overwrite its time-handling functions, and record snapshots at virtual times. For some web pages, this allows frames to be recorded slower than real time, while appearing smooth and consistent when recreated into a movie.
 
-You can use **timesnap** from the command line or as a Node.js library.
+You can use **timesnap** from the command line or as a Node.js library. It requires Node 6.4.0 or higher and npm to be installed.
 
 ## <a name="limitations" href="#limitations">#</a> **timesnap** Limitations
 **timesnap** only overwrites JavaScript functions, so pages where changes occur via other means (e.g. through video or transitions/animations from css rules) will likely not render as intended.
@@ -47,8 +47,22 @@ To use:
 node /path/to/installation/directory/node_modules/timesnap/cli.js "url" [options]
 ```
 
+*alternatively*
+
+```
+cd /path/to/installation/directory
+git clone https://github.com/tungs/timesnap.git
+cd timesnap
+npm install
+```
+
+To use:
+```
+node /path/to/installation/directory/timesnap/cli.js "url" [options]
+```
+
 ### <a name="cli-url-use" href="#cli-url-use">#</a> Command Line *url*
-The url can be a web url (e.g. `https://github.com`) or a relative path to the current working directory (e.g. `index.html`). If no url is specified, defaults to `index.html`. For urls with special characters (like `&`), enclose the urls with quotes.
+The url can be a web url (e.g. `https://github.com`) or a relative path to the current working directory (e.g. `index.html`). If no url is specified, defaults to `index.html`. For urls with special characters (like `#` and `&`), enclose the urls with quotes.
 
 ### <a name="cli-examples" href="#cli-examples">#</a> Command Line Examples
 
@@ -66,7 +80,7 @@ Equivalent to the default `timesnap` invocation, but with explicit options. Open
 
 **<a name="cli-example-selector" href="#cli-example-selector">#</a> Using a selector**:
 ```
-timesnap drawing.html -S canvas,svg
+timesnap drawing.html -S "canvas,svg"
 ```
 Opens `drawing.html` in the current working directory, crops each frame to the bounding box of the first canvas or svg element, and captures frames using default settings (5 seconds @ 60fps saving to `001.png`... `300.png`).
 
@@ -77,7 +91,7 @@ timesnap "https://tungs.github.io/truchet-tiles-original/#autoplay=true&switchSt
   --left 20 --top 40 --right 6 --bottom 30 \
   --duration 20
 ```
-Opens https://tungs.github.io/truchet-tiles-original/ with the appropriate fragment url (note the quotes in the url are necessary because of the `&`). Crops each frame to the `#container` element, with an additional crop of 20px, 40px, 6px, and 30px for the left, top, right, and bottom, respectively. Captures frames for 20 virtual seconds at 60fps to `0001.png`... `1200.png` in the current working directory.
+Opens https://tungs.github.io/truchet-tiles-original/ with the appropriate fragment url (note the quotes in the url are necessary because of the `#` and `&`). Crops each frame to the `#container` element, with an additional crop of 20px, 40px, 6px, and 30px for the left, top, right, and bottom, respectively. Captures frames for 20 virtual seconds at 60fps to `0001.png`... `1200.png` in the current working directory.
 
 **<a name="cli-example-piping" href="#cli-example-piping">#</a> Piping**:
 ```
@@ -98,7 +112,7 @@ Opens https://breathejs.org/examples/Drawing-US-Counties.html, sets the viewport
     * Duration of capture, in *seconds* (default: 5).
 * <a name="cli-options-frames" href="#cli-options-frames">#</a> Frames: `-f`, `--frames` *count*
     * Number of frames to capture.
-* <a name="cli-options-selector" href="#cli-options-selector">#</a> Selector: `-S`, `--selector` *selector*
+* <a name="cli-options-selector" href="#cli-options-selector">#</a> Selector: `-S`, `--selector` "*selector*"
     * CSS *selector* of item to capture.
 * <a name="cli-options-stdout" href="#cli-options-stdout">#</a> stdout: `--stdout`
     * Output images to stdout. Useful for piping. CLI only option.
@@ -116,6 +130,8 @@ Opens https://breathejs.org/examples/Drawing-US-Counties.html, sets the viewport
     * Height of capture, in pixels.
 * <a name="cli-options-even-width" href="#cli-options-width">#</a> Even Width: `--even-width`
     * Rounds width up to the nearest even number.
+* <a name="cli-options-transparent-background" href="#cli-options-transparent-background">#</a> Transparent Background: `--transparent-background`
+    * Allows background to be transparent if there is no background styling.
 * <a name="cli-options-left" href="#cli-options-left">#</a> Left: `-l`, `--left` *pixels*
     * Left edge of capture, in pixels. Equivalent to `--x-offset`.
 * <a name="cli-options-right" href="#cli-options-right">#</a> Right: `-r`, `--right` *pixels*
@@ -128,9 +144,9 @@ Opens https://breathejs.org/examples/Drawing-US-Counties.html, sets the viewport
     * Wait *n real seconds* after loading.
 * <a name="cli-options-quiet" href="#cli-options-quiet">#</a> Quiet: `-q`, `--quiet`
     * Suppress console logging.
-* <a name="cli-options-version" href="#cli-options-version">#</a> Version: `v`, `--version`
+* <a name="cli-options-version" href="#cli-options-version">#</a> Version: `-v`, `--version`
     * Display version information. Immediately exits.
-* <a name="cli-options-help" href="#cli-options-help">#</a> Version: `h`, `--help`
+* <a name="cli-options-help" href="#cli-options-help">#</a> Help: `-h`, `--help`
     * Display command line options. Immediately exits.
 
 ## <a name="node-use" href="#node-use">#</a> From Node.js
@@ -178,6 +194,7 @@ There are a few options for the Node API that are not accessible through the com
     * <a name="js-config-y-offset" href="#js-config-y-offset">#</a> `yOffset` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Y offset of capture, in pixels (default: 0).
     * <a name="js-config-width" href="#js-config-width">#</a> `width` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Width of capture, in pixels.
     * <a name="js-config-height" href="#js-config-height">#</a> `height` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Height of capture, in pixels.
+    * <a name="js-config-transparent-background" href="#js-config-transparent-background">#</a> `transparentBackground` &lt;[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type)&gt; Allows background to be transparent if there is no background styling (for pngs).
     * <a name="js-config-even-width" href="#js-config-even-width">#</a> `evenWidth` &lt;[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type)&gt; Rounds width up to the nearest even number.
     * <a name="js-config-left" href="#js-config-left">#</a> `left` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Left edge of capture, in pixels. Equivalent to `config.xOffset`.
     * <a name="js-config-right" href="#js-config-right">#</a> `right` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Right edge of capture, in pixels. Ignored if `width` is specified.
@@ -194,6 +211,6 @@ There are a few options for the Node API that are not accessible through the com
 * <a name="js-api-return" href="#js-api-return">#</a> returns: &lt;[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&gt; resolves after all the frames have been captured.
 
 ## <a name="how-it-works" href="#how-it-works">#</a> How it works
-**timesnap** uses puppeteer's `page.evaluateOnNewDocument` feature to automatically overwrite a page's native time-handling JavaScript functions (`new Date().getTime()`, `Date.now`, `performance.now`, `requestAnimationFrame`, `setTimeout`, `setInterval`, `cancelAnimationFrame`, `cancelTimeout`, and `cancelInterval`) to custom ones that use a virtual timeline. Events, allowing for any computation to complete before taking a screenshot.
+**timesnap** uses puppeteer's `page.evaluateOnNewDocument` feature to automatically overwrite a page's native time-handling JavaScript functions (`new Date().getTime()`, `Date.now`, `performance.now`, `requestAnimationFrame`, `setTimeout`, `setInterval`, `cancelAnimationFrame`, `cancelTimeout`, and `cancelInterval`) to custom ones that use a virtual timeline, allowing for any computation to complete before taking a screenshot.
 
 This work was inspired by [a talk by Noah Veltman](https://github.com/veltman/d3-unconf), who described manually altering a document's `Date.now` and `performance.now` functions and using `puppeteer` to change time and take snapshots. 

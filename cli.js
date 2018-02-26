@@ -64,7 +64,7 @@ commander
   .option('-q, --quiet', 'Suppress console logging')
   .parse(process.argv);
 
-commander.url = commander.args[0];
+commander.url = commander.args[0] || 'index.html';
 
 var processor;
 if (commander.stdout) {
