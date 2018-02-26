@@ -51,6 +51,7 @@ commander
   })
   .option('--transparent-background', 'Allow transparent backgrounds (for pngs)')
   .option('--even-width', 'Rounds capture width up to the nearest even number')
+  .option('--even-height', 'Rounds capture height up to the nearest even number')
   .option('-s, --start <n seconds>', 'Runs code for n virtual seconds before saving any frames.', parseFloat, 0)
   .option('-x, --x-offset <pixels>', 'X offset of capture, in pixels', parseFloat, 0)
   .option('-y, --y-offset <pixels>', 'Y offset of capture, in pixels', parseFloat, 0)

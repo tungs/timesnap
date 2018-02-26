@@ -355,6 +355,10 @@ module.exports = function (config) {
         if (config.evenWidth && (width % 2 === 1)) {
           width++;
         }
+        height = Math.ceil(height);
+        if (config.evenHeight && (height % 2 === 1)) {
+          height++;
+        }
         var screenshotClip = {
           x: x,
           y: y,
