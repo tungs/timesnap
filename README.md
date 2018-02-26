@@ -2,7 +2,7 @@
 
 **timesnap** is a Node.js program that saves sequential snapshots of web pages at precise virtual times. It uses [puppeteer](https://github.com/GoogleChrome/puppeteer) to open a web page, overwrite its time-handling functions, and record snapshots at virtual times. For some web pages, this allows frames to be recorded slower than real time, while appearing smooth and consistent when recreated into a movie.
 
-You can use **timesnap** from the command line or as a Node.js library. It requires Node 6.4.0 or higher and npm to be installed.
+You can use **timesnap** from the command line or as a Node.js library. It requires Node v6.4.0 or higher and npm to be installed.
 
 ## <a name="limitations" href="#limitations">#</a> **timesnap** Limitations
 **timesnap** only overwrites JavaScript functions, so pages where changes occur via other means (e.g. through video or transitions/animations from css rules) will likely not render as intended.
@@ -74,29 +74,29 @@ Opens `index.html` in the current working directory, sets the viewport to 800x60
 
 **<a name="cli-example-viewport-fps-duration-output" href="#cli-example-viewport-fps-duration-output">#</a> Setting viewport size, frames per second, duration, and output-pattern**:
 ```
-timesnap index.html --viewport 800,600 --fps 60 --duration 5 --output-pattern "%03d.png"
+timesnap index.html --viewport=800,600 --fps=60 --duration=5 --output-pattern="%03d.png"
 ```
 Equivalent to the default `timesnap` invocation, but with explicit options. Opens `index.html` in the current working directory, sets the viewport to 800x600, captures at 60 frames per second for 5 virtual seconds, and saves the frames to `001.png` to `300.png` in current working directory.
 
 **<a name="cli-example-selector" href="#cli-example-selector">#</a> Using a selector**:
 ```
-timesnap drawing.html -S "canvas,svg"
+timesnap drawing.html -S "canvas,svg" --output-pattern="frames/%03d.png"
 ```
-Opens `drawing.html` in the current working directory, crops each frame to the bounding box of the first canvas or svg element, and captures frames using default settings (5 seconds @ 60fps saving to `001.png`... `300.png`).
+Opens `drawing.html` in the current working directory, crops each frame to the bounding box of the first canvas or svg element, and captures frames using default settings (5 seconds @ 60fps), saving to `frames/001.png`... `frames/300.png` in the current working directory, making the directory `frames` if needed.
 
 **<a name="cli-example-offsets" href="#cli-example-offsets">#</a> Using offsets**:
 ```
 timesnap "https://tungs.github.io/truchet-tiles-original/#autoplay=true&switchStyle=random" \ 
   -S "#container" \ 
-  --left 20 --top 40 --right 6 --bottom 30 \
-  --duration 20
+  --left=20 --top=40 --right=6 --bottom=30 \
+  --duration=20 --output-directory=frames
 ```
-Opens https://tungs.github.io/truchet-tiles-original/ with the appropriate fragment url (note the quotes in the url are necessary because of the `#` and `&`). Crops each frame to the `#container` element, with an additional crop of 20px, 40px, 6px, and 30px for the left, top, right, and bottom, respectively. Captures frames for 20 virtual seconds at 60fps to `0001.png`... `1200.png` in the current working directory.
+Opens https://tungs.github.io/truchet-tiles-original/#autoplay=true&switchStyle=random (note the quotes in the url are necessary because of the `#` and `&`). Crops each frame to the `#container` element, with an additional crop of 20px, 40px, 6px, and 30px for the left, top, right, and bottom, respectively. Captures frames for 20 virtual seconds at 60fps to `frames/0001.png`... `frames/1200.png` in the current working directory, making the directory `frames` if needed.
 
 **<a name="cli-example-piping" href="#cli-example-piping">#</a> Piping**:
 ```
 timesnap https://breathejs.org/examples/Drawing-US-Counties.html \
-  -V 1920,1080 -S "#draw-canvas" --fps 60 --duration 10 --even-width --even-height \
+  -V 1920,1080 -S "#draw-canvas" --fps=60 --duration=10 --even-width --even-height \
   --stdout | ffmpeg -framerate 60 -i pipe:0 -y -pix_fmt yuv420p movie.mp4
 ```
 Opens https://breathejs.org/examples/Drawing-US-Counties.html, sets the viewport size to 1920x1080, crops each frame to the bounding box of #draw-canvas and records at 60 frames per second for ten virtual seconds and pipes the output to ffmpeg, which reads in the data from stdin, encodes the frames, and saves the result as `movie.mp4` in the current working directory. Does not save individual frames to disk. Uses the `--even-width` and `--even-height` options to ensure the dimensions of the frames are even numbers, which ffmpeg requires for certain encodings.
