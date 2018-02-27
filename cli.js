@@ -42,7 +42,7 @@ commander
   .option('-O, --output-pattern <pattern>', 'Save each file as a printf-style string (e.g. image-%03d.png)')
   .option('-R, --fps <frame rate>', 'Frames per second to capture (default: 60)', parseFloat)
   .option('-d, --duration <seconds>', 'Duration of capture, in seconds (default: 5)', parseFloat)
-  .option('-f, --frames <count>', 'Number of frames to capture', parseInt)
+  .option('--frames <count>', 'Number of frames to capture', parseInt)
   .option('-S, --selector <selector>', 'CSS Selector of item to capture')
   .option('--stdout', 'Output images to stdout')
   .option('-V, --viewport <dimensions>', 'Viewport dimensions, in pixels (e.g. 800,600)', function (str) {
