@@ -1,8 +1,10 @@
 # timesnap
 
-**timesnap** is a Node.js program that records pictures of a web page at smooth intervals. It uses [puppeteer](https://github.com/GoogleChrome/puppeteer) to open a web page, overwrite its time-handling functions, and record snapshots at virtual times. For some web pages, this allows frames to be recorded slower than real time, while appearing smooth and consistent when recreated into a movie.
+**timesnap** is a Node.js program that records screenshots of web pages that use JavaScript animations. It uses [puppeteer](https://github.com/GoogleChrome/puppeteer) to open a web page, overwrite its time-handling functions, and record snapshots at virtual times. For some web pages, this allows frames to be recorded slower than real time, while appearing smooth and consistent when recreated into a video.
 
 You can use **timesnap** from the command line or as a Node.js library. It requires Node v6.4.0 or higher and npm to be installed.
+
+To record screenshots and compile them into a video using only one command, see **[timecut](https://github.com/tungs/timecut)**.
 
 ## <a name="limitations" href="#limitations">#</a> **timesnap** Limitations
 **timesnap** only overwrites JavaScript functions, so pages where changes occur via other means (e.g. through video or transitions/animations from css rules) will likely not render as intended.
@@ -73,7 +75,7 @@ The url can be a web url (e.g. `https://github.com`) or a relative path to the c
 ```
 timesnap
 ```
-Opens `index.html` in the current working directory, sets the viewport to 800x600, captures at 60 frames per second for 5 virtual seconds, and saves the frames to `001.png` to `300.png` in the current working directory. The defaults may change in the future, so for longer term scripting, it's a good idea to explicitly pass those options, like in the following example.
+Opens `index.html` in the current working directory, sets the viewport to 800x600, captures at 60 frames per second for 5 virtual seconds, and saves the frames to `001.png` to `300.png` in the current working directory. The defaults may change in the future, so for long-term scripting, it's a good idea to explicitly pass those options, like in the following example.
 
 **<a name="cli-example-viewport-fps-duration-output" href="#cli-example-viewport-fps-duration-output">#</a> Setting viewport size, frames per second, duration, and output pattern**:
 ```
@@ -163,15 +165,53 @@ npm install timesnap --save
 ```
 
 ### <a name="node-examples" href="#node-examples">#</a> Node Examples
-```
+
+**<a name="node-example-basic" href="#node-example-basic">#</a> Basic Use:**
+```node
 const timesnap = require('timesnap');
 timesnap({
-  url: 'https://github.com',
-  fps: 30,
-  duration: 10
+  url: 'https://tungs.github.io/truchet-tiles-original/#autoplay=true&switchStyle=random',
+  viewport: {
+    width: 800,               // sets the viewport (window size) to 800x600
+    height: 600
+  },
+  selector: '#container',     // crops each frame to the bounding box of '#container'
+  left: 20, top: 40,          // further crops the left by 20px, and the top by 40px
+  right: 6, bottom: 30,       // and the right by 6px, and the bottom by 30px
+  fps: 30,                    // saves 30 frames for each virtual second
+  duration: 20,               // for 20 virtual seconds 
+  outputDirectory: 'frames'   // to frames/001.png... frames/600.png
+                              // of the current working directory
 }).then(function () {
   console.log('Done!');
 });
+```
+
+**<a name="node-example-multiple" href="#node-example-multiple">#</a> Multiple pages (Requires Node v7.6.0 or higher):**
+```node
+const timesnap = require('timesnap');
+var pages = [
+  {
+    url: 'https://tungs.github.io/truchet-tiles-original/#autoplay=true',
+    outputDirectory: 'truchet-tiles'
+  }, {
+    url: 'https://breathejs.org/examples/Drawing-US-Counties.html',
+    outputDirectory: 'counties'
+  }
+];
+(async () => {
+  for (let page of pages) {
+    await timesnap({
+      url: page.url,
+      outputDirectory: page.outputDirectory,
+      viewport: {
+        width: 800,
+        height: 600
+      },
+      duration: 20
+    });
+  }
+})();
 ```
 
 ### <a name="node-api" href="#node-api">#</a> Node API
