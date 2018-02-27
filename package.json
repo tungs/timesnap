@@ -1,11 +1,13 @@
 {
   "name": "timesnap",
   "version": "0.0.1-prerelease",
-  "description": "",
-  "author": "",
+  "description": "snapshot web pages at smooth intervals",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tungs/timesnap"
+    "url": "https://github.com/tungs/timesnap.git"
+  },
+  "author": {
+    "name": "Steve Tung"
   },
   "engines": {
     "node": ">=6.4.0"

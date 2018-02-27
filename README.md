@@ -1,6 +1,6 @@
 # timesnap
 
-**timesnap** is a Node.js program that saves sequential snapshots of web pages at precise virtual times. It uses [puppeteer](https://github.com/GoogleChrome/puppeteer) to open a web page, overwrite its time-handling functions, and record snapshots at virtual times. For some web pages, this allows frames to be recorded slower than real time, while appearing smooth and consistent when recreated into a movie.
+**timesnap** is a Node.js program that records pictures of a web page at smooth intervals. It uses [puppeteer](https://github.com/GoogleChrome/puppeteer) to open a web page, overwrite its time-handling functions, and record snapshots at virtual times. For some web pages, this allows frames to be recorded slower than real time, while appearing smooth and consistent when recreated into a movie.
 
 You can use **timesnap** from the command line or as a Node.js library. It requires Node v6.4.0 or higher and npm to be installed.
 
@@ -23,10 +23,11 @@ You can use **timesnap** from the command line or as a Node.js library. It requi
 ## <a name="from-cli" href="#from-cli">#</a> From the Command Line
 
 ### <a name="cli-global-install" href="#cli-global-install">#</a> Global Install and Use
+To Install:
 
 Due to [an issue in puppeteer](https://github.com/GoogleChrome/puppeteer/issues/375) with permissions, timesnap is not supported for global installation for root. You can configure `npm` to install global packages for a specific user following this guide: https://docs.npmjs.com/getting-started/fixing-npm-permissions#option-two-change-npms-default-directory
 
-After configuring, to install, run:
+After configuring, run:
 ```
 npm install -g timesnap
 ```
@@ -37,6 +38,7 @@ timesnap "url" [options]
 ```
 
 ### <a name="cli-local-install" href="#cli-local-install">#</a> Local Install and Use
+To Install:
 ```
 cd /path/to/installation/directory
 npm install timesnap
@@ -47,8 +49,9 @@ To use:
 node /path/to/installation/directory/node_modules/timesnap/cli.js "url" [options]
 ```
 
-*alternatively*
+*Alternatively*:
 
+To Install:
 ```
 cd /path/to/installation/directory
 git clone https://github.com/tungs/timesnap.git
