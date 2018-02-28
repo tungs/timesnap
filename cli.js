@@ -61,7 +61,7 @@ commander
   .option('-r, --right <pixels>', 'right edge of capture, in pixels', parseInt)
   .option('-t, --top <pixels>', 'top edge of capture, in pixels. Equivalent to --y-offset', parseInt)
   .option('-b, --bottom <pixels>', 'bottom edge of capture, in pixels', parseInt)
-  .option('--load-delay <n seconds>', 'Wait n real seconds after loading.', parseFloat, 0)
+  .option('--start-delay <n seconds>', 'Wait n real seconds after loading.', parseFloat, 0)
   .option('-q, --quiet', 'Suppress console logging')
   .parse(process.argv);
 

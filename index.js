@@ -217,7 +217,7 @@ module.exports = function (config) {
   config = Object.assign({}, config || {});
   var url = config.url || 'index.html';
   var delayMs = 1000 * (config.start || 0);
-  var loadWaitMs = 1000 * (config.loadDelay || 0);
+  var startWaitMs = 1000 * (config.startDelay || 0);
   var frameProcessor = config.frameProcessor;
   var frameNumToTime = config.frameNumToTime;
   var fps = config.fps, frameDuration;
@@ -318,7 +318,7 @@ module.exports = function (config) {
       }).then(function () {
         log('Page loaded');
         return new Promise(function (resolve) {
-          setTimeout(resolve, loadWaitMs);
+          setTimeout(resolve, startWaitMs);
         });
       }).then(function () {
         if (config.selector) {

@@ -148,7 +148,7 @@ Opens https://breathejs.org/examples/Drawing-US-Counties.html, sets the viewport
     * Top edge of capture, in pixels. Equivalent to `--y-offset`.
 * <a name="cli-options-bottom" href="#cli-options-bottom">#</a> Bottom: `-b`, `--bottom` *pixels*
     * Bottom edge of capture, in pixels. Ignored if `height` is specified.
-* <a name="cli-options-load-delay" href="#cli-options-load-delay">#</a> Load Delay: `--load-delay` *n seconds*
+* <a name="cli-options-start-delay" href="#cli-options-start-delay">#</a> Start Delay: `--start-delay` *n seconds*
     * Waits *n real seconds* after loading the page before starting to capture.
 * <a name="cli-options-quiet" href="#cli-options-quiet">#</a> Quiet: `-q`, `--quiet`
     * Suppresses console logging.
@@ -247,7 +247,7 @@ The Node API is structured similarly to the command line options, but there are 
     * <a name="js-config-right" href="#js-config-right">#</a> `right` &lt;[number][]&gt; Right edge of capture, in pixels. Ignored if `config.width` is specified.
     * <a name="js-config-top" href="#js-config-top">#</a> `top` &lt;[number][]&gt; Top edge of capture, in pixels. Equivalent to `config.yOffset`.
     * <a name="js-config-bottom" href="#js-config-bottom">#</a> `bottom` &lt;[number][]&gt; Bottom edge of capture, in pixels. Ignored if `config.height` is specified.
-    * <a name="js-config-load-delay" href="#js-config-load-delay">#</a> `loadDelay` &lt;[number][]&gt; Wait `config.loadDelay` real seconds after loading (default: `0`).
+    * <a name="js-config-start-delay" href="#js-config-start-delay">#</a> `startDelay` &lt;[number][]&gt; Wait `config.startDelay` real seconds after loading before starting (default: `0`).
     * <a name="js-config-quiet" href="#js-config-quiet">#</a> `quiet` &lt;[boolean][]&gt; Suppress console logging.
     * <a name="js-config-log-to-std-err" href="#js-config-log-to-std-err">#</a> `logToStdErr` &lt;[boolean][]&gt; Log to stderr instead of stdout. Doesn't do anything if `config.quiet` is set to true.
     * <a name="js-config-frame-processor" href="#js-config-frame-processor">#</a> `frameProcessor` &lt;[function][]([Buffer][], [number][], [number][])&gt; A function that will be called after capturing each frame. If `config.outputDirectory` and `config.outputPattern` aren't specified, enabling this suppresses automatic file output. After capturing each frame, `config.frameProcessor` is called with three arguments, and if it returns a promise, capture will be paused until the promise resolves:
