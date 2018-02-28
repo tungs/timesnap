@@ -68,7 +68,7 @@ node /path/to/installation/directory/timesnap/cli.js "url" [options]
 ```
 
 ### <a name="cli-url-use" href="#cli-url-use">#</a> Command Line *url*
-The url can be a web url (e.g. `https://github.com`) or a relative path to the current working directory (e.g. `index.html`). If no url is specified, defaults to `index.html`. For urls with special characters (like `#` and `&`), enclose the urls with quotes.
+The url can be a web url (e.g. `https://github.com`) or a file path, with relative paths resolving to the current working directory. If no url is specified, defaults to `index.html`. For urls with special characters (like `#` and `&`), enclose the urls with quotes.
 
 ### <a name="cli-examples" href="#cli-examples">#</a> Command Line Examples
 
@@ -105,38 +105,38 @@ timesnap https://breathejs.org/examples/Drawing-US-Counties.html \
   -V 1920,1080 -S "#draw-canvas" --fps=60 --duration=10 --even-width --even-height \
   --stdout | ffmpeg -framerate 60 -i pipe:0 -y -pix_fmt yuv420p movie.mp4
 ```
-Opens https://breathejs.org/examples/Drawing-US-Counties.html, sets the viewport size to 1920x1080, crops each frame to the bounding box of #draw-canvas and records at 60 frames per second for ten virtual seconds and pipes the output to ffmpeg, which reads in the data from stdin, encodes the frames, and saves the result as `movie.mp4` in the current working directory. Does not save individual frames to disk. Uses the `--even-width` and `--even-height` options to ensure the dimensions of the frames are even numbers, which ffmpeg requires for certain encodings.
+Opens https://breathejs.org/examples/Drawing-US-Counties.html, sets the viewport size to 1920x1080, crops each frame to the bounding box of #draw-canvas and records at 60 frames per second for ten virtual seconds and pipes the output to ffmpeg, which reads in the data from stdin, encodes the frames, and saves the result as `movie.mp4` in the current working directory. It does not save individual frames to disk. It uses the `--even-width` and `--even-height` options to ensure the dimensions of the frames are even numbers, which ffmpeg requires for certain encodings.
 
 ### <a name="cli-options" href="#cli-options">#</a> Command Line *options*
 * <a name="cli-options-output-directory" href="#cli-options-output-directory">#</a> Output Directory: `-o`, `--output-directory` *directory*
-    * Saves images to a *directory* (default './').
+    * Saves images to a *directory* (default `./`).
 * <a name="cli-options-output-pattern" href="#cli-options-output-pattern">#</a> Output Pattern: `-O`, `--output-pattern` *pattern*
-    * Saves each file to a *pattern* as a printf-style string (e.g. `image-%03d.png`).
+    * Sets each file name according to a printf-style *pattern* (e.g. `image-%03d.png`).
 * <a name="cli-options-fps" href="#cli-options-fps">#</a> Frame Rate: `-R`, `--fps` *frame rate*
-    * Frame rate (in frames per virtual second) of capture (default: 60).
+    * Frame rate (in frames per virtual second) of capture (default: `60`).
 * <a name="cli-options-duration" href="#cli-options-duration">#</a> Duration: `-d`, `--duration` *seconds*
-    * Duration of capture, in *seconds* (default: 5).
+    * Duration of capture, in *seconds* (default: `5`).
 * <a name="cli-options-frames" href="#cli-options-frames">#</a> Frames: `--frames` *count*
     * Number of frames to capture.
 * <a name="cli-options-selector" href="#cli-options-selector">#</a> Selector: `-S`, `--selector` "*selector*"
-    * Crops each frame to the bounding box of the first item found by the CSS *selector*.
+    * Crops each frame to the bounding box of the first item found by the [CSS *selector*](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors).
 * <a name="cli-options-stdout" href="#cli-options-stdout">#</a> stdout: `--stdout`
-    * Output images to stdout. Useful for piping. Command line only option.
+    * Output images to stdout. Useful for piping.
 * <a name="cli-options-viewport" href="#cli-options-viewport">#</a> Viewport: `-V`, `--viewport` *dimensions*
     * Viewport dimensions, in pixels. For example, `800` (for width) or `800,600` (for width and height).
 * <a name="cli-options-start" href="#cli-options-start">#</a> Start: `-s`, `--start` *n seconds*
-    * Runs code for n virtual seconds before saving any frames (default: 0).
+    * Runs code for n virtual seconds before saving any frames (default: `0`).
 * <a name="cli-options-x-offset" href="#cli-options-x-offset">#</a> X Offset: `-x`, `--x-offset` *pixels*
-    * X offset of capture, in pixels (default: 0).
+    * X offset of capture, in pixels (default: `0`).
 * <a name="cli-options-y-offset" href="#cli-options-y-offset">#</a> Y Offset: `-y`, `--y-offset` *pixels*
-    * Y offset of capture, in pixels (default: 0).
+    * Y offset of capture, in pixels (default: `0`).
 * <a name="cli-options-width" href="#cli-options-width">#</a> Width: `-W`, `--width` *pixels*
     * Width of capture, in pixels.
 * <a name="cli-options-height" href="#cli-options-height">#</a> Height: `-H`, `--height` *pixels*
     * Height of capture, in pixels.
-* <a name="cli-options-even-width" href="#cli-options-width">#</a> Even Width: `--even-width`
+* <a name="cli-options-even-width" href="#cli-options-even-width">#</a> Even Width: `--even-width`
     * Rounds width up to the nearest even number.
-* <a name="cli-options-even-height" href="#cli-options-height">#</a> Even Height: `--even-height`
+* <a name="cli-options-even-height" href="#cli-options-even-height">#</a> Even Height: `--even-height`
     * Rounds height up to the nearest even number.
 * <a name="cli-options-transparent-background" href="#cli-options-transparent-background">#</a> Transparent Background: `--transparent-background`
     * Allows background to be transparent if there is no background styling.
@@ -217,20 +217,20 @@ var pages = [
 
 ### <a name="node-api" href="#node-api">#</a> Node API
 
-There are a few options for the Node API that are not accessible through the command line interface: `config.logToStdErr`, and `config.frameProcessor`.
+The Node API is structured similarly to the command line options, but there are a few options for the Node API that are not accessible through the command line interface: `config.logToStdErr`, and `config.frameProcessor`.
 
 **timesnap(config)**
 *  <a name="js-api-config" href="#js-api-config">#</a> `config` &lt;[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)&gt;
-    * <a name="js-config-url" href="#js-config-url">#</a> `url` &lt;[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type)&gt; The url to load. It can be a web url, like `https://github.com` or a relative path to the current working directory, like `index.html` (default: `index.html`).
+    * <a name="js-config-url" href="#js-config-url">#</a> `url` &lt;[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type)&gt; The url to load. It can be a web url, like `https://github.com` or a file path, with relative paths resolving to the current working directory (default: `index.html`).
     * <a name="js-config-output-directory" href="#js-config-output-directory">#</a> `outputDirectory` &lt;[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type)&gt; Saves images to a directory. Makes one if necessary.
-    * <a name="js-config-output-pattern" href="#js-config-output-pattern">#</a> `outputPattern` &lt;[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type)&gt; Saves each file to a pattern as a printf-style string (e.g. `image-%03d.png`)
+    * <a name="js-config-output-pattern" href="#js-config-output-pattern">#</a> `outputPattern` &lt;[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type)&gt; Sets each file name according to a printf-style pattern (e.g. `image-%03d.png`)
     * <a name="js-config-fps" href="#js-config-fps">#</a> `fps` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; frame rate, in frames per virtual second, of capture (default: `60`).
     * <a name="js-config-duration" href="#js-config-duration">#</a> `duration` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Duration of capture, in seconds (default: `5`).
     * <a name="js-config-frames" href="#js-config-frames">#</a> `frames` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Number of frames to capture. Overrides default fps or default duration.
-    * <a name="js-config-selector" href="#js-config-selector">#</a> `selector` &lt;[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type)&gt; [CSS selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) of item to capture.
+    * <a name="js-config-selector" href="#js-config-selector">#</a> `selector` &lt;[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type)&gt; Crops each frame to the bounding box of the first item found by the specified [CSS selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors).
     * <a name="js-config-viewport" href="#js-config-viewport">#</a> `viewport` &lt;[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)&gt;
-        * <a name="js-config-viewport-width" href="#js-config-viewport-width">#</a> `width` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Width of viewport.
-        * <a name="js-config-viewport-height" href="#js-config-viewport-height">#</a> `height` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Height of viewport.
+        * <a name="js-config-viewport-width" href="#js-config-viewport-width">#</a> `width` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Width of viewport, in pixels.
+        * <a name="js-config-viewport-height" href="#js-config-viewport-height">#</a> `height` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Height of viewport, in pixels.
         * <a name="js-config-viewport-scale-factor" href="#js-config-viewport-scale-factor">#</a> `deviceScaleFactor` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Device scale factor (default: `1`).
         * <a name="js-config-viewport-mobile" href="#js-config-viewport-mobile">#</a> `isMobile` &lt;[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type)&gt; Specifies whether the `meta viewport` tag should be used (default: `false`).
         * <a name="js-config-viewport-touch" href="#js-config-viewport-touch">#</a> `hasTouch` &lt;[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type)&gt; Specifies whether the viewport supports touch (default: `false`).
@@ -244,9 +244,9 @@ There are a few options for the Node API that are not accessible through the com
     * <a name="js-config-even-width" href="#js-config-even-width">#</a> `evenWidth` &lt;[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type)&gt; Rounds width up to the nearest even number.
     * <a name="js-config-even-height" href="#js-config-even-height">#</a> `evenHeight` &lt;[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type)&gt; Rounds height up to the nearest even number.
     * <a name="js-config-left" href="#js-config-left">#</a> `left` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Left edge of capture, in pixels. Equivalent to `config.xOffset`.
-    * <a name="js-config-right" href="#js-config-right">#</a> `right` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Right edge of capture, in pixels. Ignored if `width` is specified.
+    * <a name="js-config-right" href="#js-config-right">#</a> `right` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Right edge of capture, in pixels. Ignored if `config.width` is specified.
     * <a name="js-config-top" href="#js-config-top">#</a> `top` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Top edge of capture, in pixels. Equivalent to `config.yOffset`.
-    * <a name="js-config-bottom" href="#js-config-bottom">#</a> `bottom` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Bottom edge of capture, in pixels. Ignored if `height` is specified.
+    * <a name="js-config-bottom" href="#js-config-bottom">#</a> `bottom` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Bottom edge of capture, in pixels. Ignored if `config.height` is specified.
     * <a name="js-config-load-delay" href="#js-config-load-delay">#</a> `loadDelay` &lt;[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)&gt; Wait `config.loadDelay` real seconds after loading (default: `0`).
     * <a name="js-config-quiet" href="#js-config-quiet">#</a> `quiet` &lt;[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type)&gt; Suppress console logging.
     * <a name="js-config-log-to-std-err" href="#js-config-log-to-std-err">#</a> `logToStdErr` &lt;[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type)&gt; Log to stderr instead of stdout. Doesn't do anything if `config.quiet` is set to true.
