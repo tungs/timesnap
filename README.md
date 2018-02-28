@@ -262,11 +262,11 @@ The Node API is structured similarly to the command line options, but there are 
 
 This work was inspired by [a talk by Noah Veltman](https://github.com/veltman/d3-unconf), who described manually altering a document's `Date.now` and `performance.now` functions and using `puppeteer` to change time and take snapshots. 
 
-[Object]: (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
-[string]: (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type)
-[number]: (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)
-[boolean]: (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type)
-[function]: (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function)
-[Buffer]: (https://nodejs.org/api/buffer.html#buffer_class_buffer)
-[Promise]: (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
-[CSS selector]: (https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors)
+[Object]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object
+[string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type
+[number]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type
+[boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type
+[function]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function
+[Buffer]: https://nodejs.org/api/buffer.html#buffer_class_buffer
+[Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[CSS selector]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors
