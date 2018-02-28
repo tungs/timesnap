@@ -36,7 +36,7 @@ const commander = require('commander');
 const recorder = require('./index.js');
 
 commander
-  .version('0.0.1', '-v, --version')
+  .version('0.0.1-post', '-v, --version')
   .usage('<url> [options]')
   .option('-o, --output-directory <path>', 'Save to directory. (default: ./)')
   .option('-O, --output-pattern <pattern>', 'Save each file as a printf-style string (e.g. image-%03d.png)')

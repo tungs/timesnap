@@ -1,6 +1,6 @@
 {
   "name": "timesnap",
-  "version": "0.0.1",
+  "version": "0.0.1-post",
   "description": "Take screenshots of web pages at smooth intervals",
   "repository": {
     "type": "git",
