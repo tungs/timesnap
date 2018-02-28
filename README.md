@@ -2,7 +2,7 @@
 
 **timesnap** is a Node.js program that records screenshots of web pages that use JavaScript animations. It uses [puppeteer](https://github.com/GoogleChrome/puppeteer) to open a web page, overwrite its time-handling functions, and record snapshots at virtual times. For some web pages, this allows frames to be recorded slower than real time, while appearing smooth and consistent when recreated into a video.
 
-You can use **timesnap** from the command line or as a Node.js library. It requires Node v6.4.0 or higher and npm to be installed.
+You can use **timesnap** from the command line or as a Node.js library. It requires Node v6.4.0 or higher and npm.
 
 To record screenshots and compile them into a video using only one command, see **[timecut](https://github.com/tungs/timecut)**.
 
@@ -28,7 +28,7 @@ To record screenshots and compile them into a video using only one command, see 
 ### <a name="cli-global-install" href="#cli-global-install">#</a> Global Install and Use
 To install:
 
-Due to [an issue in puppeteer](https://github.com/GoogleChrome/puppeteer/issues/375) with permissions, timesnap is not supported for global installation for root. You can configure `npm` to install global packages for a specific user following this guide: https://docs.npmjs.com/getting-started/fixing-npm-permissions#option-two-change-npms-default-directory
+Due to [an issue in puppeteer](https://github.com/GoogleChrome/puppeteer/issues/375) with permissions, timesnap is not supported for global installation for root. You can configure `npm` to install global packages for a specific user by following this guide: https://docs.npmjs.com/getting-started/fixing-npm-permissions#option-two-change-npms-default-directory
 
 After configuring, run:
 ```
@@ -68,7 +68,7 @@ node /path/to/installation/directory/timesnap/cli.js "url" [options]
 ```
 
 ### <a name="cli-url-use" href="#cli-url-use">#</a> Command Line *url*
-The url can be a web url (e.g. `https://github.com`) or a file path, with relative paths resolving to the current working directory. If no url is specified, defaults to `index.html`. For urls with special characters (like `#` and `&`), enclose the urls with quotes.
+The url can be a web url (e.g. `https://github.com`) or a file path, with relative paths resolving to the current working directory. If no url is specified, defaults to `index.html`. Enclose urls with special characters (like `#` and `&`) with quotes.
 
 ### <a name="cli-examples" href="#cli-examples">#</a> Command Line Examples
 
@@ -76,7 +76,7 @@ The url can be a web url (e.g. `https://github.com`) or a file path, with relati
 ```
 timesnap
 ```
-Opens `index.html` in the current working directory, sets the viewport to 800x600, captures at 60 frames per second for 5 virtual seconds, and saves the frames to `001.png` to `300.png` in the current working directory. The defaults may change in the future, so for long-term scripting, it's a good idea to explicitly pass those options, like in the following example.
+Opens `index.html` in the current working directory, sets the viewport to 800x600, captures at 60 frames per second for 5 virtual seconds, and saves the frames to `001.png` to `300.png` in the current working directory. The defaults may change in the future, so for long-term scripting, it's a good idea to explicitly pass these options, like in the following example.
 
 **<a name="cli-example-viewport-fps-duration-output" href="#cli-example-viewport-fps-duration-output">#</a> Setting viewport size, frames per second, duration, and output pattern**:
 ```
@@ -103,9 +103,9 @@ Opens https://tungs.github.io/truchet-tiles-original/#autoplay=true&switchStyle=
 ```
 timesnap https://breathejs.org/examples/Drawing-US-Counties.html \
   -V 1920,1080 -S "#draw-canvas" --fps=60 --duration=10 --even-width --even-height \
-  --stdout | ffmpeg -framerate 60 -i pipe:0 -y -pix_fmt yuv420p movie.mp4
+  --stdout | ffmpeg -framerate 60 -i pipe:0 -y -pix_fmt yuv420p video.mp4
 ```
-Opens https://breathejs.org/examples/Drawing-US-Counties.html, sets the viewport size to 1920x1080, crops each frame to the bounding box of #draw-canvas and records at 60 frames per second for ten virtual seconds and pipes the output to ffmpeg, which reads in the data from stdin, encodes the frames, and saves the result as `movie.mp4` in the current working directory. It does not save individual frames to disk. It uses the `--even-width` and `--even-height` options to ensure the dimensions of the frames are even numbers, which ffmpeg requires for certain encodings.
+Opens https://breathejs.org/examples/Drawing-US-Counties.html, sets the viewport size to 1920x1080, crops each frame to the bounding box of `#draw-canvas`, records at 60 frames per second for ten virtual seconds, and pipes the output to `ffmpeg`, which reads in the data from stdin, encodes the frames using pixel format `yuv420p`, and saves the result as `video.mp4` in the current working directory. It does not save individual frames to disk. It uses the `--even-width` and `--even-height` options to ensure the dimensions of the frames are even numbers, which ffmpeg requires for certain encodings.
 
 ### <a name="cli-options" href="#cli-options">#</a> Command Line *options*
 * <a name="cli-options-output-directory" href="#cli-options-output-directory">#</a> Output Directory: `-o`, `--output-directory` *directory*
@@ -121,7 +121,7 @@ Opens https://breathejs.org/examples/Drawing-US-Counties.html, sets the viewport
 * <a name="cli-options-selector" href="#cli-options-selector">#</a> Selector: `-S`, `--selector` "*selector*"
     * Crops each frame to the bounding box of the first item found by the [CSS *selector*][CSS selector].
 * <a name="cli-options-stdout" href="#cli-options-stdout">#</a> stdout: `--stdout`
-    * Output images to stdout. Useful for piping.
+    * Outputs images to stdout. Useful for piping.
 * <a name="cli-options-viewport" href="#cli-options-viewport">#</a> Viewport: `-V`, `--viewport` *dimensions*
     * Viewport dimensions, in pixels. For example, `800` (for width) or `800,600` (for width and height).
 * <a name="cli-options-start" href="#cli-options-start">#</a> Start: `-s`, `--start` *n seconds*
@@ -149,7 +149,7 @@ Opens https://breathejs.org/examples/Drawing-US-Counties.html, sets the viewport
 * <a name="cli-options-bottom" href="#cli-options-bottom">#</a> Bottom: `-b`, `--bottom` *pixels*
     * Bottom edge of capture, in pixels. Ignored if `height` is specified.
 * <a name="cli-options-start-delay" href="#cli-options-start-delay">#</a> Start Delay: `--start-delay` *n seconds*
-    * Waits *n real seconds* after loading the page before starting to capture.
+    * Waits *n real seconds* after loading the page before starting the virtual timeline.
 * <a name="cli-options-quiet" href="#cli-options-quiet">#</a> Quiet: `-q`, `--quiet`
     * Suppresses console logging.
 * <a name="cli-options-version" href="#cli-options-version">#</a> Version: `-v`, `--version`
@@ -224,7 +224,7 @@ The Node API is structured similarly to the command line options, but there are 
     * <a name="js-config-url" href="#js-config-url">#</a> `url` &lt;[string][]&gt; The url to load. It can be a web url, like `https://github.com` or a file path, with relative paths resolving to the current working directory (default: `index.html`).
     * <a name="js-config-output-directory" href="#js-config-output-directory">#</a> `outputDirectory` &lt;[string][]&gt; Saves images to a directory. Makes one if necessary.
     * <a name="js-config-output-pattern" href="#js-config-output-pattern">#</a> `outputPattern` &lt;[string][]&gt; Sets each file name according to a printf-style pattern (e.g. `image-%03d.png`)
-    * <a name="js-config-fps" href="#js-config-fps">#</a> `fps` &lt;[number][]&gt; frame rate, in frames per virtual second, of capture (default: `60`).
+    * <a name="js-config-fps" href="#js-config-fps">#</a> `fps` &lt;[number][]&gt; Frame rate, in frames per virtual second, of capture (default: `60`).
     * <a name="js-config-duration" href="#js-config-duration">#</a> `duration` &lt;[number][]&gt; Duration of capture, in seconds (default: `5`).
     * <a name="js-config-frames" href="#js-config-frames">#</a> `frames` &lt;[number][]&gt; Number of frames to capture. Overrides default fps or default duration.
     * <a name="js-config-selector" href="#js-config-selector">#</a> `selector` &lt;[string][]&gt; Crops each frame to the bounding box of the first item found by the specified [CSS selector][].
@@ -240,27 +240,27 @@ The Node API is structured similarly to the command line options, but there are 
     * <a name="js-config-y-offset" href="#js-config-y-offset">#</a> `yOffset` &lt;[number][]&gt; Y offset of capture, in pixels (default: `0`).
     * <a name="js-config-width" href="#js-config-width">#</a> `width` &lt;[number][]&gt; Width of capture, in pixels.
     * <a name="js-config-height" href="#js-config-height">#</a> `height` &lt;[number][]&gt; Height of capture, in pixels.
-    * <a name="js-config-transparent-background" href="#js-config-transparent-background">#</a> `transparentBackground` &lt;[boolean][]&gt; Allows background to be transparent if there is no background styling (for pngs).
-    * <a name="js-config-even-width" href="#js-config-even-width">#</a> `evenWidth` &lt;[boolean][]&gt; Rounds width up to the nearest even number.
-    * <a name="js-config-even-height" href="#js-config-even-height">#</a> `evenHeight` &lt;[boolean][]&gt; Rounds height up to the nearest even number.
+    * <a name="js-config-transparent-background" href="#js-config-transparent-background">#</a> `transparentBackground` &lt;[boolean][]&gt; Allows background to be transparent if there is no background styling.
+    * <a name="js-config-even-width" href="#js-config-even-width">#</a> `evenWidth` &lt;[boolean][]&gt; Rounds capture width up to the nearest even number.
+    * <a name="js-config-even-height" href="#js-config-even-height">#</a> `evenHeight` &lt;[boolean][]&gt; Rounds capture height up to the nearest even number.
     * <a name="js-config-left" href="#js-config-left">#</a> `left` &lt;[number][]&gt; Left edge of capture, in pixels. Equivalent to `config.xOffset`.
     * <a name="js-config-right" href="#js-config-right">#</a> `right` &lt;[number][]&gt; Right edge of capture, in pixels. Ignored if `config.width` is specified.
     * <a name="js-config-top" href="#js-config-top">#</a> `top` &lt;[number][]&gt; Top edge of capture, in pixels. Equivalent to `config.yOffset`.
     * <a name="js-config-bottom" href="#js-config-bottom">#</a> `bottom` &lt;[number][]&gt; Bottom edge of capture, in pixels. Ignored if `config.height` is specified.
-    * <a name="js-config-start-delay" href="#js-config-start-delay">#</a> `startDelay` &lt;[number][]&gt; Wait `config.startDelay` real seconds after loading before starting (default: `0`).
-    * <a name="js-config-quiet" href="#js-config-quiet">#</a> `quiet` &lt;[boolean][]&gt; Suppress console logging.
-    * <a name="js-config-log-to-std-err" href="#js-config-log-to-std-err">#</a> `logToStdErr` &lt;[boolean][]&gt; Log to stderr instead of stdout. Doesn't do anything if `config.quiet` is set to true.
+    * <a name="js-config-start-delay" href="#js-config-start-delay">#</a> `startDelay` &lt;[number][]&gt; Waits `config.startDelay` real seconds after loading before starting (default: `0`).
+    * <a name="js-config-quiet" href="#js-config-quiet">#</a> `quiet` &lt;[boolean][]&gt; Suppresses console logging.
+    * <a name="js-config-log-to-std-err" href="#js-config-log-to-std-err">#</a> `logToStdErr` &lt;[boolean][]&gt; Logs to stderr instead of stdout. Doesn't do anything if `config.quiet` is set to true.
     * <a name="js-config-frame-processor" href="#js-config-frame-processor">#</a> `frameProcessor` &lt;[function][]([Buffer][], [number][], [number][])&gt; A function that will be called after capturing each frame. If `config.outputDirectory` and `config.outputPattern` aren't specified, enabling this suppresses automatic file output. After capturing each frame, `config.frameProcessor` is called with three arguments, and if it returns a promise, capture will be paused until the promise resolves:
-        * `screenshotData` &lt;[Buffer][]&gt; a buffer of the screenshot data.
+        * `screenshotData` &lt;[Buffer][]&gt; A buffer of the screenshot data.
         * `frameNumber` &lt;[number][]&gt; The current frame number (1 based).
         * `totalFrames` &lt;[number][]&gt; The total number of frames.
 
 * <a name="js-api-return" href="#js-api-return">#</a> returns: &lt;[Promise][]&gt; resolves after all the frames have been captured.
 
 ## <a name="how-it-works" href="#how-it-works">#</a> How it works
-**timesnap** uses puppeteer's `page.evaluateOnNewDocument` feature to automatically overwrite a page's native time-handling JavaScript functions (`new Date().getTime`, `Date.now`, `performance.now`, `requestAnimationFrame`, `setTimeout`, `setInterval`, `cancelAnimationFrame`, `cancelTimeout`, and `cancelInterval`) to custom ones that use a virtual timeline, allowing for any computation to complete before taking a screenshot.
+**timesnap** uses puppeteer's `page.evaluateOnNewDocument` feature to automatically overwrite a page's native time-handling JavaScript functions and objects (new Date(), `Date.now`, `performance.now`, `requestAnimationFrame`, `setTimeout`, `setInterval`, `cancelAnimationFrame`, `cancelTimeout`, and `cancelInterval`) to custom ones that use a virtual timeline, allowing for JavaScript computation to complete before taking a screenshot.
 
-This work was inspired by [a talk by Noah Veltman](https://github.com/veltman/d3-unconf), who described manually altering a document's `Date.now` and `performance.now` functions and using `puppeteer` to change time and take snapshots. 
+This work was inspired by [a talk by Noah Veltman](https://github.com/veltman/d3-unconf), who described altering a document's `Date.now` and `performance.now` functions to refer to a virtual time and using `puppeteer` to change that virtual time and take snapshots. 
 
 [Object]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type
