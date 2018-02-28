@@ -7,20 +7,21 @@ You can use **timesnap** from the command line or as a Node.js library. It requi
 To record screenshots and compile them into a video using only one command, see **[timecut](https://github.com/tungs/timecut)**.
 
 ## <a name="limitations" href="#limitations">#</a> **timesnap** Limitations
-**timesnap** only overwrites JavaScript functions, so pages where changes occur via other means (e.g. through video or transitions/animations from css rules) will likely not render as intended.
+**timesnap** only overwrites JavaScript functions, so pages where changes occur via other means (e.g. through video or transitions/animations from CSS rules) will likely not render as intended.
 
 ## Read Me Contents
 
-* [From the Command Line](#cli-use)
+* [From the Command Line](#from-cli)
   * [Global Install and Use](#cli-global-install)
   * [Local Install and Use](#cli-local-install)
   * [Command Line *url*](#cli-url-use)
   * [Command Line Examples](#cli-examples)
   * [Command Line *options*](#cli-options)
-* [From Node.js](#node-use)
+* [From Node.js](#from-node)
   * [Node Install](#node-install)
   * [Node Examples](#node-examples)
   * [Node API](#node-api)
+* [How it works](#how-it-works)
 
 ## <a name="from-cli" href="#from-cli">#</a> From the Command Line
 
@@ -156,7 +157,7 @@ Opens https://breathejs.org/examples/Drawing-US-Counties.html, sets the viewport
 * <a name="cli-options-help" href="#cli-options-help">#</a> Help: `-h`, `--help`
     * Displays command line options. Immediately exits.
 
-## <a name="node-use" href="#node-use">#</a> From Node.js
+## <a name="from-node" href="#from-node">#</a> From Node.js
 **timesnap** can also be included as a library inside Node.js programs.
 
 ### <a name="node-install" href="#node-install">#</a> Node Install
@@ -257,6 +258,6 @@ There are a few options for the Node API that are not accessible through the com
 * <a name="js-api-return" href="#js-api-return">#</a> returns: &lt;[Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)&gt; resolves after all the frames have been captured.
 
 ## <a name="how-it-works" href="#how-it-works">#</a> How it works
-**timesnap** uses puppeteer's `page.evaluateOnNewDocument` feature to automatically overwrite a page's native time-handling JavaScript functions (`new Date().getTime()`, `Date.now`, `performance.now`, `requestAnimationFrame`, `setTimeout`, `setInterval`, `cancelAnimationFrame`, `cancelTimeout`, and `cancelInterval`) to custom ones that use a virtual timeline, allowing for any computation to complete before taking a screenshot.
+**timesnap** uses puppeteer's `page.evaluateOnNewDocument` feature to automatically overwrite a page's native time-handling JavaScript functions (`new Date().getTime`, `Date.now`, `performance.now`, `requestAnimationFrame`, `setTimeout`, `setInterval`, `cancelAnimationFrame`, `cancelTimeout`, and `cancelInterval`) to custom ones that use a virtual timeline, allowing for any computation to complete before taking a screenshot.
 
 This work was inspired by [a talk by Noah Veltman](https://github.com/veltman/d3-unconf), who described manually altering a document's `Date.now` and `performance.now` functions and using `puppeteer` to change time and take snapshots. 

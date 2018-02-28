@@ -214,18 +214,16 @@ const makeFileDirectoryIfNeeded = function (filepath) {
 };
 
 module.exports = function (config) {
-  config = Object.assign({ 'url': 'index.html' }, config || {});
-  var url = config.url;
+  config = Object.assign({}, config || {});
+  var url = config.url || 'index.html';
   var delayMs = 1000 * (config.start || 0);
   var loadWaitMs = 1000 * (config.loadDelay || 0);
-  var framesToCapture;
-  var dimensions;
   var frameProcessor = config.frameProcessor;
   var frameNumToTime = config.frameNumToTime;
   var fps = config.fps, frameDuration;
+  var framesToCapture;
   var outputPath = path.resolve(process.cwd(), (config.outputDirectory || './'));
   var animationFrameDuration;
-  var browserFrames;
 
   if (url.indexOf('://') === -1) {
     // assume it is a file path
@@ -324,16 +322,16 @@ module.exports = function (config) {
         });
       }).then(function () {
         if (config.selector) {
-          return getSelectorDimensions(page, config.selector).then(function (ds) {
-            if (!ds) {
+          return getSelectorDimensions(page, config.selector).then(function (dimensions) {
+            if (!dimensions) {
               log('Warning: no element found for ' + config.selector);
               return;
             }
-            dimensions = ds;
+            return dimensions;
           });
         }
-      }).then(function () {
-        browserFrames = getBrowserFrames(page.mainFrame());
+      }).then(function (dimensions) {
+        var browserFrames = getBrowserFrames(page.mainFrame());
         var frameCount = 0;
         var viewport = page.viewport();
         var x = config.xOffset || config.left || 0;
@@ -369,7 +367,6 @@ module.exports = function (config) {
           return frameCount++ < framesToCapture;
         }, function () {
           return goToTime(browserFrames, delayMs + frameNumToTime(frameCount, framesToCapture)).then(function () {
-            log('Capturing Frame ' + frameCount + '...');
             var fileName = fileNameConverter(frameCount, framesToCapture);
             var filePath;
             if (fileName) {
@@ -378,6 +375,7 @@ module.exports = function (config) {
             } else {
               filePath = undefined;
             }
+            log('Capturing Frame ' + frameCount + (filePath ? ' to ' + filePath : '') + '...');
             return page.screenshot({
               path: filePath,
               clip: screenshotClip,
