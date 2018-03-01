@@ -44,23 +44,23 @@ commander
   .option('-d, --duration <seconds>', 'Duration of capture, in seconds (default: 5)', parseFloat)
   .option('--frames <count>', 'Number of frames to capture', parseInt)
   .option('-S, --selector <selector>', 'CSS Selector of item to capture')
-  .option('--stdout', 'Output images to stdout')
+  .option('--output-stdout', 'Output images to stdout')
   .option('-V, --viewport <dimensions>', 'Viewport dimensions, in pixels (e.g. 800,600)', function (str) {
     var dims = str.split(',').map(function (d) { return parseInt(d); });
     return dims.length > 1 ? { width: dims[0], height: dims[1] } : { width: dims[0] };
   })
   .option('--transparent-background', 'Allow transparent backgrounds (for pngs)')
-  .option('--even-width', 'Rounds capture width up to the nearest even number')
-  .option('--even-height', 'Rounds capture height up to the nearest even number')
+  .option('--round-to-even-width', 'Rounds capture width up to the nearest even number')
+  .option('--round-to-even-height', 'Rounds capture height up to the nearest even number')
   .option('-s, --start <n seconds>', 'Runs code for n virtual seconds before saving any frames.', parseFloat, 0)
   .option('-x, --x-offset <pixels>', 'X offset of capture, in pixels', parseFloat, 0)
   .option('-y, --y-offset <pixels>', 'Y offset of capture, in pixels', parseFloat, 0)
   .option('-W, --width <pixels>', 'Width of capture, in pixels', parseInt)
   .option('-H, --height <pixels>', 'Height of capture, in pixels', parseInt)
-  .option('-l, --left <pixels>', 'left edge of capture, in pixels. Equivalent to --x-offset', parseInt)
-  .option('-r, --right <pixels>', 'right edge of capture, in pixels', parseInt)
-  .option('-t, --top <pixels>', 'top edge of capture, in pixels. Equivalent to --y-offset', parseInt)
-  .option('-b, --bottom <pixels>', 'bottom edge of capture, in pixels', parseInt)
+  .option('-l, --left <pixels>', 'left edge of capture, in pixels. Equivalent to --x-offset', parseFloat)
+  .option('-r, --right <pixels>', 'right edge of capture, in pixels', parseFloat)
+  .option('-t, --top <pixels>', 'top edge of capture, in pixels. Equivalent to --y-offset', parseFloat)
+  .option('-b, --bottom <pixels>', 'bottom edge of capture, in pixels', parseFloat)
   .option('--start-delay <n seconds>', 'Wait n real seconds after loading.', parseFloat, 0)
   .option('-q, --quiet', 'Suppress console logging')
   .parse(process.argv);
@@ -68,7 +68,7 @@ commander
 commander.url = commander.args[0] || 'index.html';
 
 var processor;
-if (commander.stdout) {
+if (commander.outputStdout) {
   process.stdout.on('error', function (err) {
     if (!commander.quiet) {
       // eslint-disable-next-line no-console
@@ -82,7 +82,7 @@ if (commander.stdout) {
 }
 
 var config = Object.assign({}, commander, {
-  logToStdErr: commander.stdout ? true : false,
+  logToStdErr: commander.outputStdout ? true : false,
   frameProcessor: processor
 });
 

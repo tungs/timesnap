@@ -341,8 +341,8 @@ module.exports = function (config) {
         var width;
         var height;
         if (dimensions) {
-          width = config.width || Math.ceil(dimensions.width) - x - right;
-          height = config.height || Math.ceil(dimensions.height) - y - bottom;
+          width = config.width || (dimensions.width - x - right);
+          height = config.height || (dimensions.height - y - bottom);
           x += dimensions.scrollX + dimensions.left;
           y += dimensions.scrollY + dimensions.top;
         } else {
@@ -350,11 +350,11 @@ module.exports = function (config) {
           height = config.height || (viewport.height - y - bottom);
         }
         width = Math.ceil(width);
-        if (config.evenWidth && (width % 2 === 1)) {
+        if (config.roundToEvenWidth && (width % 2 === 1)) {
           width++;
         }
         height = Math.ceil(height);
-        if (config.evenHeight && (height % 2 === 1)) {
+        if (config.roundToEvenHeight && (height % 2 === 1)) {
           height++;
         }
         var screenshotClip = {
