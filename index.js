@@ -37,6 +37,13 @@ const sprintf = require('sprintf-js').sprintf;
 const defaultDuration = 5;
 const defaultFPS = 60;
 
+// unrandomizer seed constants
+const defaultSeed1 = 10;
+const defaultSeed2 = 20;
+const defaultSeed3 = 0;
+const defaultSeed4 = 0;
+const seedIterations = 10;
+
 const overwriteTime = function (page, animationFrameDuration) {
   return page.evaluateOnNewDocument(function (animationFrameDuration) {
     (function (exports) {
@@ -68,6 +75,7 @@ const overwriteTime = function (page, animationFrameDuration) {
       };
       var _processUntilTime = function (ms) {
         _sortPendingBlocks();
+
         while (_pendingBlocks.length && _pendingBlocks[0].time <= _startTime + ms) {
           _processNextBlock();
           _sortPendingBlocks();
@@ -159,6 +167,103 @@ const overwriteTime = function (page, animationFrameDuration) {
   }, animationFrameDuration);
 };
 
+const overwriteRandom = function (page, seed1 = 0, seed2 = 0, seed3 = 0, seed4 = 0) {
+  if (!seed1 && !seed3) {
+    seed1 = defaultSeed1;
+    seed3 = defaultSeed3;
+  }
+  if (!seed2 && !seed4) {
+    seed2 = defaultSeed2;
+    seed4 = defaultSeed4;
+  }
+  return page.evaluateOnNewDocument(function (seed1, seed2, seed3, seed4, seedIterations) {
+    (function (exports) {
+      let shift1 = 23;
+      let shift2 = 17;
+      let shift3 = 26;
+
+      let state0 = new ArrayBuffer(8);
+      let state1 = new ArrayBuffer(8);
+
+      let state0SInts = new Int32Array(state0);
+      let state1SInts = new Int32Array(state1);
+
+      let state0UInt = new Uint32Array(state0);
+      let state1UInt = new Uint32Array(state1);
+
+      state0UInt[0] = seed1;
+      state0UInt[1] = seed3;
+      state1UInt[0] = seed2;
+      state1UInt[1] = seed4;
+
+      let _xorshift128 = function () {
+        let xA = state1SInts[0];
+        let xB = state1SInts[1];
+        let yA = state0SInts[0];
+        let yB = state0SInts[1];
+
+        yA = yA ^ ((yA << shift1) | (yB >>> (32 - shift1)));
+        yB = yB ^ (yB << shift1);
+
+        yB = yB ^ ((yA << (32 - shift2)) | (yB >>> shift2));
+        yA = yA ^ (yA >>> shift2);
+
+        yA = yA ^ xA;
+        yB = yB ^ xB;
+
+        yB = yB ^ ((xA << (32 - shift3)) | (xB >>> shift3));
+        yA = yA ^ (xA >>> shift3);
+
+
+        state0SInts[0] = xA;
+        state0SInts[1] = xB;
+        state1SInts[0] = yA;
+        state1SInts[1] = yB;
+      };
+
+      let doubleBuffer = new ArrayBuffer(8);
+      let doubleBufferView = new DataView(doubleBuffer);
+
+      let sumBuffer = new ArrayBuffer(8);
+      let sumBufferUInts = new Uint32Array(sumBuffer);
+      let sumBufferSInts = new Int32Array(sumBuffer);
+
+      let addState0Ints = new Uint32Array(state0);
+      let addState1Ints = new Uint32Array(state1);
+
+      let byteLimit = (1 << 30) * 4 - 1;
+
+      let _statesToDouble = function () {
+        let aSum = addState0Ints[0] + addState1Ints[0];
+        let bSum = addState0Ints[1] + addState1Ints[1];
+
+        if (bSum > byteLimit) {
+          aSum = aSum + 1;
+        }
+
+        sumBufferUInts[0] = aSum;
+        sumBufferUInts[1] = bSum;
+
+        doubleBufferView.setInt32(0, (sumBufferSInts[0] & 0x000FFFFF) | 0x3FF00000);
+        doubleBufferView.setInt32(4, sumBufferSInts[1]);
+
+        return doubleBufferView.getFloat64(0) - 1;
+      };
+
+      for (let i = 0; i < seedIterations; i++) {
+        _xorshift128();
+      }
+
+      // overwriting built-in functions...
+      exports.Math.random = function () {
+        _xorshift128();
+        return _statesToDouble();
+      };
+    })(this);
+  }, seed1, seed2, seed3, seed4, seedIterations);
+};
+
+
 const promiseLoop = function (condition, body) {
   var loop = function () {
     if (condition()) {
@@ -220,6 +325,7 @@ module.exports = function (config) {
   var startWaitMs = 1000 * (config.startDelay || 0);
   var frameProcessor = config.frameProcessor;
   var frameNumToTime = config.frameNumToTime;
+  var unrandom = config.unrandomize;
   var fps = config.fps, frameDuration;
   var framesToCapture;
   var outputPath = path.resolve(process.cwd(), (config.outputDirectory || './'));
@@ -311,6 +417,12 @@ module.exports = function (config) {
           return page.setViewport(config.viewport);
         }
       }).then(function () {
+        if (!unrandom) {
+          return;
+        }
+        var args = typeof unrandom === 'string' ? unrandom.split(',').map(n=>parseInt(n)) : [];
+        return overwriteRandom(page, ...args);
+      }).then(function () {
         return overwriteTime(page, animationFrameDuration);
       }).then(function () {
         log('Going to ' + url + '...');
@@ -374,6 +486,12 @@ module.exports = function (config) {
               makeFileDirectoryIfNeeded(filePath);
             } else {
               filePath = undefined;
+            }
+            if (screenshotClip.height <= 0) {
+              throw new Error('Capture height is ' + (screenshotClip.height < 0 ? 'negative!' : '0!'));
+            }
+            if (screenshotClip.width <= 0) {
+              throw new Error('Capture width is ' + (screenshotClip.width < 0 ? 'negative!' : '0!'));
             }
             log('Capturing Frame ' + frameCount + (filePath ? ' to ' + filePath : '') + '...');
             return page.screenshot({
