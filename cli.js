@@ -3,7 +3,7 @@
 /**
  * BSD 3-Clause License
  *
- * Copyright (c) 2018, Steve Tung
+ * Copyright (c) 2019, Steve Tung
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@ const commander = require('commander');
 const recorder = require('./index.js');
 
 commander
-  .version('0.0.2', '-v, --version')
+  .version('0.0.2-post', '-v, --version')
   .usage('<url> [options]')
   .option('-o, --output-directory <path>', 'Save to directory. (default: ./)')
   .option('-O, --output-pattern <pattern>', 'Save each file as a printf-style string (e.g. image-%03d.png)')

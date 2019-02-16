@@ -1,7 +1,7 @@
 /**
  * BSD 3-Clause License
  *
- * Copyright (c) 2018, Steve Tung
+ * Copyright (c) 2019, Steve Tung
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -124,7 +124,9 @@ const overwriteTime = function (page, animationFrameDuration) {
       };
       exports.setTimeout = _setTimeout;
       exports.requestAnimationFrame = function (fn) {
-        return _setTimeout(fn, animationFrameDuration);
+        return _setTimeout(function () {
+          fn(_virtualTime);
+        }, animationFrameDuration);
       };
       exports.setInterval = function (fn, interval, ...args) {
         var lastCallId;
