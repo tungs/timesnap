@@ -410,6 +410,12 @@ module.exports = function (config) {
             } else {
               filePath = undefined;
             }
+            if (screenshotClip.height <= 0) {
+              throw new Error('Capture height is ' + (screenshotClip.height < 0 ? 'negative!' : '0!'));
+            }
+            if (screenshotClip.width <= 0) {
+              throw new Error('Capture width is ' + (screenshotClip.width < 0 ? 'negative!' : '0!'));
+            }
             log('Capturing Frame ' + frameCount + (filePath ? ' to ' + filePath : '') + '...');
             return page.screenshot({
               path: filePath,
