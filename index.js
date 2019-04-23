@@ -38,6 +38,7 @@ const defaultDuration = 5;
 const defaultFPS = 60;
 
 // unrandomizer seed constants
+// default seed values are only used if all of the seed values end up being 0
 const defaultSeed1 = 10;
 const defaultSeed2 = 20;
 const defaultSeed3 = 0;
@@ -168,15 +169,7 @@ const overwriteTime = function (page, animationFrameDuration) {
 };
 
 const overwriteRandom = function (page, seed1 = 0, seed2 = 0, seed3 = 0, seed4 = 0) {
-  if (!seed1 && !seed3) {
-    seed1 = defaultSeed1;
-    seed3 = defaultSeed3;
-  }
-  if (!seed2 && !seed4) {
-    seed2 = defaultSeed2;
-    seed4 = defaultSeed4;
-  }
-  return page.evaluateOnNewDocument(function (seed1, seed2, seed3, seed4, seedIterations) {
+  return page.evaluateOnNewDocument(function (config) {
     (function (exports) {
       let shift1 = 23;
       let shift2 = 17;
@@ -191,10 +184,19 @@ const overwriteRandom = function (page, seed1 = 0, seed2 = 0, seed3 = 0, seed4 =
       let state0UInt = new Uint32Array(state0);
       let state1UInt = new Uint32Array(state1);
 
-      state0UInt[0] = seed1;
-      state0UInt[1] = seed3;
-      state1UInt[0] = seed2;
-      state1UInt[1] = seed4;
+      state0UInt[0] = config.seed1;
+      state0UInt[1] = config.seed3;
+      state1UInt[0] = config.seed2;
+      state1UInt[1] = config.seed4;
+
+      if (!state0SInts[0] && !state0SInts[1] && !state1SInts[0] && !state1SInts[1]) {
+        // if the states are all zero, it does not advance to a new state
+        // in this case, the states to the default seeds
+        state0UInt[0] = config.defaultSeed1;
+        state0UInt[1] = config.defaultSeed3;
+        state1UInt[0] = config.defaultSeed2;
+        state1UInt[1] = config.defaultSeed4;
+      }
 
       let _xorshift128 = function () {
         let xA = state1SInts[0];
@@ -214,43 +216,27 @@ const overwriteRandom = function (page, seed1 = 0, seed2 = 0, seed3 = 0, seed4 =
         yB = yB ^ ((xA << (32 - shift3)) | (xB >>> shift3));
         yA = yA ^ (xA >>> shift3);
 
-
         state0SInts[0] = xA;
         state0SInts[1] = xB;
         state1SInts[0] = yA;
         state1SInts[1] = yB;
       };
 
-      let doubleBuffer = new ArrayBuffer(8);
-      let doubleBufferView = new DataView(doubleBuffer);
-
-      let sumBuffer = new ArrayBuffer(8);
-      let sumBufferUInts = new Uint32Array(sumBuffer);
-      let sumBufferSInts = new Int32Array(sumBuffer);
-
-      let addState0Ints = new Uint32Array(state0);
-      let addState1Ints = new Uint32Array(state1);
-
-      let byteLimit = (1 << 30) * 4 - 1;
+      let byteLimit = Math.pow(2, 32);
+      let mantissaLimit = Math.pow(2, 53);
 
       let _statesToDouble = function () {
-        let aSum = addState0Ints[0] + addState1Ints[0];
-        let bSum = addState0Ints[1] + addState1Ints[1];
-
-        if (bSum > byteLimit) {
+        let aSum = state0UInt[0] + state1UInt[0];
+        let bSum = state0UInt[1] + state1UInt[1];
+        if (bSum >= byteLimit) {
           aSum = aSum + 1;
+          bSum -= byteLimit;
         }
-
-        sumBufferUInts[0] = aSum;
-        sumBufferUInts[1] = bSum;
-
-        doubleBufferView.setInt32(0, (sumBufferSInts[0] & 0x000FFFFF) | 0x3FF00000);
-        doubleBufferView.setInt32(4, sumBufferSInts[1]);
-
-        return doubleBufferView.getFloat64(0) - 1;
+        aSum = aSum & 0x001FFFFF;
+        return (aSum * byteLimit + bSum) / mantissaLimit;
       };
 
-      for (let i = 0; i < seedIterations; i++) {
+      for (let i = 0; i < config.seedIterations; i++) {
         _xorshift128();
       }
 
@@ -260,9 +246,12 @@ const overwriteRandom = function (page, seed1 = 0, seed2 = 0, seed3 = 0, seed4 =
         return _statesToDouble();
       };
     })(this);
-  }, seed1, seed2, seed3, seed4, seedIterations);
+  }, {
+    seed1, seed2, seed3, seed4,
+    defaultSeed1, defaultSeed2, defaultSeed3, defaultSeed4,
+    seedIterations
+  });
 };
-
 
 const promiseLoop = function (condition, body) {
   var loop = function () {
