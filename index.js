@@ -77,6 +77,16 @@ const overwriteTime = function (page, animationFrameDuration) {
       };
       var _setTimeout = function (fn, timeout, ...args) {
         var id = _idCount;
+        var blockFn;
+        if (fn instanceof Function) {
+          blockFn = fn;
+        } else {
+          // according to https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout,
+          // setTimeout should support evaluating strings as code, though it's not recommended
+          blockFn = function () {
+            eval(fn);
+          };
+        }
         if (!timeout || isNaN(timeout)) {
           // If timeout is 0, there may be an infinite loop
           // Changing it to 1 shouldn't disrupt code, because
@@ -86,12 +96,13 @@ const overwriteTime = function (page, animationFrameDuration) {
         _pendingBlocks.push({
           time: timeout + _virtualTime,
           id: id,
-          fn: fn,
+          fn: blockFn,
           args: args
         });
         _idCount++;
         return id;
       };
+
       var _clearTimeout = function (id) {
         // according to https://developer.mozilla.org/en-US-docs/Web/API/WindowOrWorkerGlobalScope/setInterval,
         // setInterval and setTimeout share the same pool of IDs, and clearInterval and clearTimeout
@@ -109,20 +120,6 @@ const overwriteTime = function (page, animationFrameDuration) {
         }
       };
 
-      // overwriting built-in functions...
-      exports.Date = class Date extends _oldDate {
-        constructor() {
-          if (!arguments.length) {
-            super(_virtualTime);
-          } else {
-            super(...arguments);
-          }
-        }
-      };
-      exports.Date.now = exports.performance.now = function () {
-        return _virtualTime;
-      };
-      exports.setTimeout = _setTimeout;
       var _frameTime;
       var _requestAnimationFrame = function (fn) {
         return _setTimeout(function () {
@@ -143,12 +140,33 @@ const overwriteTime = function (page, animationFrameDuration) {
       };
       _updateFrameTime();
 
+      // overwriting built-in functions...
+      exports.Date = class Date extends _oldDate {
+        constructor() {
+          if (!arguments.length) {
+            super(_virtualTime);
+          } else {
+            super(...arguments);
+          }
+        }
+      };
+      exports.Date.now = exports.performance.now = function () {
+        return _virtualTime;
+      };
+      exports.setTimeout = _setTimeout;
+      exports.requestAnimationFrame = _requestAnimationFrame;
       exports.setInterval = function (fn, interval, ...args) {
         var lastCallId;
         var id = _idCount;
         var running = true;
         var intervalFn = function () {
-          fn.apply(exports, args);
+          if (fn instanceof Function) {
+            fn.apply(exports, args);
+          } else {
+            // according to https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval,
+            // setInterval should support evaluating strings as code, though it's not recommended
+            eval(fn);
+          }
           if (running) {
             lastCallId = _setTimeout(intervalFn, interval);
           }
@@ -166,7 +184,6 @@ const overwriteTime = function (page, animationFrameDuration) {
         // can technically be used interchangeably
         return id;
       };
-      exports.requestAnimationFrame = _requestAnimationFrame;
       exports.cancelAnimationFrame = _clearTimeout;
       exports.clearTimeout = _clearTimeout;
       exports.clearInterval = _clearTimeout;
