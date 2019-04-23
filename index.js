@@ -123,11 +123,26 @@ const overwriteTime = function (page, animationFrameDuration) {
         return _virtualTime;
       };
       exports.setTimeout = _setTimeout;
-      exports.requestAnimationFrame = function (fn) {
+      var _frameTime;
+      var _requestAnimationFrame = function (fn) {
         return _setTimeout(function () {
-          fn(_virtualTime);
+          // According to https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame,
+          // the passed argument to the callback should be the starting time of the
+          // chunk of requestAnimationFrame callbacks that are called for that particular frame.
+          // Since the processing time of callbacks do not advance virtual time, in most cases
+          // there may not be significant differences between _frameTime and _virtualTime.
+          fn(_frameTime);
         }, animationFrameDuration);
       };
+
+      var _updateFrameTime = function () {
+        // Using this implementation may potentially cause issues in the future
+        // for high-fps capture, where _frameTime is not advanced per frame
+        _requestAnimationFrame(_updateFrameTime);
+        _frameTime = _virtualTime;
+      };
+      _updateFrameTime();
+
       exports.setInterval = function (fn, interval, ...args) {
         var lastCallId;
         var id = _idCount;
@@ -151,6 +166,7 @@ const overwriteTime = function (page, animationFrameDuration) {
         // can technically be used interchangeably
         return id;
       };
+      exports.requestAnimationFrame = _requestAnimationFrame;
       exports.cancelAnimationFrame = _clearTimeout;
       exports.clearTimeout = _clearTimeout;
       exports.clearInterval = _clearTimeout;
