@@ -44,6 +44,7 @@ const defaultSeed2 = 20;
 const defaultSeed3 = 0;
 const defaultSeed4 = 0;
 const seedIterations = 10;
+const randomSeedLimit = 1000000000;
 
 const overwriteTime = function (page, animationFrameDuration) {
   return page.evaluateOnNewDocument(function (animationFrameDuration) {
@@ -441,10 +442,23 @@ module.exports = function (config) {
           return page.setViewport(config.viewport);
         }
       }).then(function () {
-        if (!unrandom) {
+        if (unrandom === undefined || unrandom === false) {
           return;
         }
-        var args = typeof unrandom === 'string' ? unrandom.split(',').map(n=>parseInt(n)) : [];
+        var args, seed;
+        if (Array.isArray(unrandom)) {
+          args = unrandom;
+        } else if (unrandom === 'random-seed') {
+          seed = Math.floor(Math.random() * randomSeedLimit) + 1;
+          log('Generated seed: ' + seed);
+          args = [ seed ];
+        } else if (typeof unrandom === 'string') {
+          args = unrandom.split(',').map(n=>parseInt(n));
+        } else if (typeof unrandom === 'number') {
+          args = [ unrandom ];
+        } else {
+          args = [];
+        }
         return overwriteRandom(page, ...args);
       }).then(function () {
         return overwriteTime(page, animationFrameDuration);
