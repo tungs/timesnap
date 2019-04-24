@@ -149,7 +149,7 @@ Opens https://breathejs.org/examples/Drawing-US-Counties.html, sets the viewport
     * Top edge of capture, in pixels. Equivalent to `--y-offset`.
 * <a name="cli-options-bottom" href="#cli-options-bottom">#</a> Bottom: `-b`, `--bottom` *pixels*
     * Bottom edge of capture, in pixels. Ignored if `height` is specified.
-* <a name="cli-options-unrandomize" href="#cli-options-unrandomize">#</a> Unrandomize: `-U`, `--unrandomize` *\[seeds\]*
+* <a name="cli-options-unrandomize" href="#cli-options-unrandomize">#</a> Unrandomize: `-u`, `--unrandomize` *\[seeds\]*
     * Overwrites `Math.random` with a seeded pseudorandom number generator. Can provide optional seeds as up to four comma separated integers (e.g. `--unrandomize 2,3,5,7` or `--unrandomize 42`). If `seeds` is not provided, it uses the seeds 10,0,20,0.
 * <a name="cli-options-start-delay" href="#cli-options-start-delay">#</a> Start Delay: `--start-delay` *n seconds*
     * Waits *n real seconds* after loading the page before starting the virtual timeline.

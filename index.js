@@ -227,7 +227,7 @@ const overwriteRandom = function (page, seed1 = 0, seed2 = 0, seed3 = 0, seed4 =
 
       if (!state0SInts[0] && !state0SInts[1] && !state1SInts[0] && !state1SInts[1]) {
         // if the states are all zero, it does not advance to a new state
-        // in this case, the states to the default seeds
+        // in this case, set the states to the default seeds
         state0UInt[0] = config.defaultSeed1;
         state0UInt[1] = config.defaultSeed3;
         state1UInt[0] = config.defaultSeed2;
