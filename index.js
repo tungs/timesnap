@@ -330,7 +330,8 @@ module.exports = function (config) {
   };
 
   const launchOptions = {
-    dumpio: !config.quiet && !config.logToStdErr
+      dumpio: !config.quiet && !config.logToStdErr,
+      args: config.launchArgs || []
   };
 
   return puppeteer.launch(launchOptions).then(function (browser) {
