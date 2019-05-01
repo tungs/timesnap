@@ -34,9 +34,10 @@
 
 const commander = require('commander');
 const recorder = require('./index.js');
+const packageInfo = require('./package.json');
 
 commander
-  .version('0.0.3', '-v, --version')
+  .version(packageInfo.version, '-v, --version')
   .usage('<url> [options]')
   .option('-o, --output-directory <path>', 'Save to directory. (default: ./)')
   .option('-O, --output-pattern <pattern>', 'Save each file as a printf-style string (e.g. image-%03d.png)')
@@ -62,6 +63,7 @@ commander
   .option('-t, --top <pixels>', 'top edge of capture, in pixels. Equivalent to --y-offset', parseFloat)
   .option('-b, --bottom <pixels>', 'bottom edge of capture, in pixels', parseFloat)
   .option('--start-delay <n seconds>', 'Wait n real seconds after loading.', parseFloat, 0)
+  .option('-u, --unrandomize [seed]', 'Overwrite Math.random() with a PRNG with up to 4 optional, comma-separated integer seeds')
   .option('-q, --quiet', 'Suppress console logging')
   .parse(process.argv);
 
