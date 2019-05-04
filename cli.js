@@ -65,6 +65,10 @@ commander
   .option('--start-delay <n seconds>', 'Wait n real seconds after loading.', parseFloat, 0)
   .option('-u, --unrandomize [seed]', 'Overwrite Math.random() with a PRNG with up to 4 optional, comma-separated integer seeds')
   .option('-q, --quiet', 'Suppress console logging')
+  .option('-L, --launch-arguments <arguments>', 'Custom launch arguments for Puppeteer browser', function (str) {
+    // TODO: make a more sophisticated parser for options that can handle quote marks
+    return str.split(' ');
+  })
   .parse(process.argv);
 
 commander.url = commander.args[0] || 'index.html';
