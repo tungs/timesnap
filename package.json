@@ -1,6 +1,6 @@
 {
   "name": "timesnap",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Take screenshots of web pages at smooth intervals",
   "repository": {
     "type": "git",
@@ -26,6 +26,6 @@
     "sprintf-js": "1.1.1"
   },
   "devDependencies": {
-    "eslint": "^4.3.0"
+    "eslint": "^5.16.0"
   }
 }

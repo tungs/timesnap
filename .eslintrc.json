@@ -6,31 +6,19 @@
   },
   "extends": "eslint:recommended",
   "rules": {
-    "space-before-function-paren": ["error", {
-      "anonymous": "always",
-      "named": "never"
-    }],
-    "indent": [
+    "space-before-function-paren": [
       "error",
-      2
+      {
+        "anonymous": "always",
+        "named": "never"
+      }
     ],
-    "linebreak-style": [
-      "error",
-      "unix"
-    ],
-    "no-trailing-spaces": [
-      "error"
-    ],
-    "no-console": [
-      "warn"
-    ],
-    "quotes": [
-      "error",
-      "single"
-    ],
-    "semi": [
-      "error",
-      "always"
-    ]
+    "indent": ["error", 2],
+    "linebreak-style": ["error", "unix"],
+    "no-trailing-spaces": ["error"],
+    "no-console": ["warn"],
+    "quotes": ["error", "single"],
+    "semi": ["error", "always"],
+    "newline-per-chained-call": ["error", {"ignoreChainWithDepth": 3}]
   }
 }
