@@ -49,7 +49,7 @@ const randomSeedLimit = 1000000000;
 const overwriteTime = function (page, animationFrameDuration) {
   return page.evaluateOnNewDocument(function (animationFrameDuration) {
     (function (exports) {
-      var _virtualTime = new Date().getTime();
+      var _virtualTime = (new Date()).getTime();
       var _startTime = _virtualTime;
       var _oldDate = Date;
       // a block is a segment of blocking code, wrapped in a function
@@ -78,10 +78,7 @@ const overwriteTime = function (page, animationFrameDuration) {
       var _processUntilTime = function (ms) {
         _sortPendingBlocks();
 
-        while (
-          _pendingBlocks.length &&
-          _pendingBlocks[0].time <= _startTime + ms
-        ) {
+        while (_pendingBlocks.length && _pendingBlocks[0].time <= _startTime + ms) {
           _processNextBlock();
           _sortPendingBlocks();
         }
@@ -202,114 +199,94 @@ const overwriteTime = function (page, animationFrameDuration) {
       exports.clearInterval = _clearTimeout;
       // exported custom functions
       exports._processNextBlock = _processNextBlock;
-      exports._processUntilTime = _processUntilTime;
+      exports._processUntilTime  = _processUntilTime;
     })(this);
   }, animationFrameDuration);
 };
 
-const overwriteRandom = function (
-  page,
-  seed1 = 0,
-  seed2 = 0,
-  seed3 = 0,
-  seed4 = 0
-) {
-  return page.evaluateOnNewDocument(
-    function (config) {
-      (function (exports) {
-        let shift1 = 23;
-        let shift2 = 17;
-        let shift3 = 26;
+const overwriteRandom = function (page, seed1 = 0, seed2 = 0, seed3 = 0, seed4 = 0) {
+  return page.evaluateOnNewDocument(function (config) {
+    (function (exports) {
+      let shift1 = 23;
+      let shift2 = 17;
+      let shift3 = 26;
 
-        let state0 = new ArrayBuffer(8);
-        let state1 = new ArrayBuffer(8);
+      let state0 = new ArrayBuffer(8);
+      let state1 = new ArrayBuffer(8);
 
-        let state0SInts = new Int32Array(state0);
-        let state1SInts = new Int32Array(state1);
+      let state0SInts = new Int32Array(state0);
+      let state1SInts = new Int32Array(state1);
 
-        let state0UInt = new Uint32Array(state0);
-        let state1UInt = new Uint32Array(state1);
+      let state0UInt = new Uint32Array(state0);
+      let state1UInt = new Uint32Array(state1);
 
-        state0UInt[0] = config.seed1;
-        state0UInt[1] = config.seed3;
-        state1UInt[0] = config.seed2;
-        state1UInt[1] = config.seed4;
+      state0UInt[0] = config.seed1;
+      state0UInt[1] = config.seed3;
+      state1UInt[0] = config.seed2;
+      state1UInt[1] = config.seed4;
 
-        if (
-          !state0SInts[0] &&
-          !state0SInts[1] &&
-          !state1SInts[0] &&
-          !state1SInts[1]
-        ) {
-          // if the states are all zero, it does not advance to a new state
-          // in this case, set the states to the default seeds
-          state0UInt[0] = config.defaultSeed1;
-          state0UInt[1] = config.defaultSeed3;
-          state1UInt[0] = config.defaultSeed2;
-          state1UInt[1] = config.defaultSeed4;
+      if (!state0SInts[0] && !state0SInts[1] && !state1SInts[0] && !state1SInts[1]) {
+        // if the states are all zero, it does not advance to a new state
+        // in this case, set the states to the default seeds
+        state0UInt[0] = config.defaultSeed1;
+        state0UInt[1] = config.defaultSeed3;
+        state1UInt[0] = config.defaultSeed2;
+        state1UInt[1] = config.defaultSeed4;
+      }
+
+      let _xorshift128 = function () {
+        let xA = state1SInts[0];
+        let xB = state1SInts[1];
+        let yA = state0SInts[0];
+        let yB = state0SInts[1];
+
+        yA = yA ^ ((yA << shift1) | (yB >>> (32 - shift1)));
+        yB = yB ^ (yB << shift1);
+
+        yB = yB ^ ((yA << (32 - shift2)) | (yB >>> shift2));
+        yA = yA ^ (yA >>> shift2);
+
+        yA = yA ^ xA;
+        yB = yB ^ xB;
+
+        yB = yB ^ ((xA << (32 - shift3)) | (xB >>> shift3));
+        yA = yA ^ (xA >>> shift3);
+
+        state0SInts[0] = xA;
+        state0SInts[1] = xB;
+        state1SInts[0] = yA;
+        state1SInts[1] = yB;
+      };
+
+      let byteLimit = Math.pow(2, 32);
+      let mantissaLimit = Math.pow(2, 53);
+
+      let _statesToDouble = function () {
+        let aSum = state0UInt[0] + state1UInt[0];
+        let bSum = state0UInt[1] + state1UInt[1];
+        if (bSum >= byteLimit) {
+          aSum = aSum + 1;
+          bSum -= byteLimit;
         }
+        aSum = aSum & 0x001FFFFF;
+        return (aSum * byteLimit + bSum) / mantissaLimit;
+      };
 
-        let _xorshift128 = function () {
-          let xA = state1SInts[0];
-          let xB = state1SInts[1];
-          let yA = state0SInts[0];
-          let yB = state0SInts[1];
+      for (let i = 0; i < config.seedIterations; i++) {
+        _xorshift128();
+      }
 
-          yA = yA ^ ((yA << shift1) | (yB >>> (32 - shift1)));
-          yB = yB ^ (yB << shift1);
-
-          yB = yB ^ ((yA << (32 - shift2)) | (yB >>> shift2));
-          yA = yA ^ (yA >>> shift2);
-
-          yA = yA ^ xA;
-          yB = yB ^ xB;
-
-          yB = yB ^ ((xA << (32 - shift3)) | (xB >>> shift3));
-          yA = yA ^ (xA >>> shift3);
-
-          state0SInts[0] = xA;
-          state0SInts[1] = xB;
-          state1SInts[0] = yA;
-          state1SInts[1] = yB;
-        };
-
-        let byteLimit = Math.pow(2, 32);
-        let mantissaLimit = Math.pow(2, 53);
-
-        let _statesToDouble = function () {
-          let aSum = state0UInt[0] + state1UInt[0];
-          let bSum = state0UInt[1] + state1UInt[1];
-          if (bSum >= byteLimit) {
-            aSum = aSum + 1;
-            bSum -= byteLimit;
-          }
-          aSum = aSum & 0x001fffff;
-          return (aSum * byteLimit + bSum) / mantissaLimit;
-        };
-
-        for (let i = 0; i < config.seedIterations; i++) {
-          _xorshift128();
-        }
-
-        // overwriting built-in functions...
-        exports.Math.random = function () {
-          _xorshift128();
-          return _statesToDouble();
-        };
-      })(this);
-    },
-    {
-      seed1,
-      seed2,
-      seed3,
-      seed4,
-      defaultSeed1,
-      defaultSeed2,
-      defaultSeed3,
-      defaultSeed4,
-      seedIterations
-    }
-  );
+      // overwriting built-in functions...
+      exports.Math.random = function () {
+        _xorshift128();
+        return _statesToDouble();
+      };
+    })(this);
+  }, {
+    seed1, seed2, seed3, seed4,
+    defaultSeed1, defaultSeed2, defaultSeed3, defaultSeed4,
+    seedIterations
+  });
 };
 
 const promiseLoop = function (condition, body) {
@@ -327,13 +304,11 @@ const getBrowserFrames = function (frame) {
 
 const goToTime = function (browserFrames, time) {
   // Goes to a certain time. Can't go backwards
-  return Promise.all(
-    browserFrames.map(function (frame) {
-      return frame.evaluate(function (ms) {
-        window._processUntilTime(ms);
-      }, time);
-    })
-  );
+  return Promise.all(browserFrames.map(function (frame) {
+    return frame.evaluate(function (ms) {
+      window._processUntilTime(ms);
+    }, time);
+  }));
 };
 
 const getSelectorDimensions = function (page, selector) {
@@ -358,9 +333,7 @@ const getSelectorDimensions = function (page, selector) {
 };
 
 const makeFileDirectoryIfNeeded = function (filepath) {
-  var dir = path.parse(filepath).dir,
-    ind,
-    currDir;
+  var dir = path.parse(filepath).dir, ind, currDir;
   var directories = dir.split(path.sep);
   for (ind = 1; ind <= directories.length; ind++) {
     currDir = directories.slice(0, ind).join(path.sep);
@@ -378,10 +351,9 @@ module.exports = function (config) {
   var frameProcessor = config.frameProcessor;
   var frameNumToTime = config.frameNumToTime;
   var unrandom = config.unrandomize;
-  var fps = config.fps,
-    frameDuration;
+  var fps = config.fps, frameDuration;
   var framesToCapture;
-  var outputPath = path.resolve(process.cwd(), config.outputDirectory || './');
+  var outputPath = path.resolve(process.cwd(), (config.outputDirectory || './'));
   var animationFrameDuration;
 
   if (url.indexOf('://') === -1) {
@@ -394,7 +366,8 @@ module.exports = function (config) {
     if (!fps) {
       if (config.duration) {
         fps = framesToCapture / config.duration;
-      } else {
+      }
+      else {
         fps = defaultFPS;
       }
     }
@@ -409,16 +382,16 @@ module.exports = function (config) {
     }
   }
 
-  frameDuration = 1000 / fps;
+  frameDuration = 1000/fps;
   if (fps > 60) {
     animationFrameDuration = frameDuration;
   } else {
-    animationFrameDuration = 1000 / 60;
+    animationFrameDuration = 1000/60;
   }
 
   if (!frameNumToTime) {
     frameNumToTime = function (frameCount) {
-      return (frameCount - 1) * frameDuration;
+      return (frameCount-1) * frameDuration;
     };
   }
 
@@ -454,173 +427,136 @@ module.exports = function (config) {
 
   const launchOptions = {
     dumpio: !config.quiet && !config.logToStdErr,
+    headless: (config.headless !== undefined ? config.headless : true),
+    executablePath: config.executablePath,
     args: config.launchArguments || []
   };
 
   return puppeteer.launch(launchOptions).then(function (browser) {
-    return browser
-      .newPage()
-      .then(function (page) {
-        return Promise.resolve()
-          .then(function () {
-            if (config.viewport) {
-              if (!config.viewport.width) {
-                config.viewport.width = page.viewport().width;
-              }
-              if (!config.viewport.height) {
-                config.viewport.height = page.viewport().height;
-              }
-              return page.setViewport(config.viewport);
-            }
-          })
-          .then(function () {
-            if (unrandom === undefined || unrandom === false) {
+    return browser.newPage().then(function (page) {
+      return Promise.resolve().then(function () {
+        if (config.viewport) {
+          if (!config.viewport.width) {
+            config.viewport.width = page.viewport().width;
+          }
+          if (!config.viewport.height) {
+            config.viewport.height = page.viewport().height;
+          }
+          return page.setViewport(config.viewport);
+        }
+      }).then(function () {
+        if (unrandom === undefined || unrandom === false) {
+          return;
+        }
+        var args, seed;
+        if (Array.isArray(unrandom)) {
+          args = unrandom;
+        } else if (unrandom === 'random-seed') {
+          seed = Math.floor(Math.random() * randomSeedLimit) + 1;
+          log('Generated seed: ' + seed);
+          args = [ seed ];
+        } else if (typeof unrandom === 'string') {
+          args = unrandom.split(',').map(n=>parseInt(n));
+        } else if (typeof unrandom === 'number') {
+          args = [ unrandom ];
+        } else {
+          args = [];
+        }
+        return overwriteRandom(page, ...args);
+      }).then(function () {
+        return overwriteTime(page, animationFrameDuration);
+      }).then(function () {
+        log('Going to ' + url + '...');
+        return page.goto(url, { waitUntil: 'networkidle0' });
+      }).then(function () {
+        log('Page loaded');
+        if ('preparePage' in config) {
+          log('Prepare page before screenshot');
+          return config.preparePage(page);
+        }
+      }).then(function () {
+        log('Page loaded and prepared');
+        return new Promise(function (resolve) {
+          setTimeout(resolve, startWaitMs);
+        });
+      }).then(function () {
+        if (config.selector) {
+          return getSelectorDimensions(page, config.selector).then(function (dimensions) {
+            if (!dimensions) {
+              log('Warning: no element found for ' + config.selector);
               return;
             }
-            var args, seed;
-            if (Array.isArray(unrandom)) {
-              args = unrandom;
-            } else if (unrandom === 'random-seed') {
-              seed = Math.floor(Math.random() * randomSeedLimit) + 1;
-              log('Generated seed: ' + seed);
-              args = [seed];
-            } else if (typeof unrandom === 'string') {
-              args = unrandom.split(',').map(n => parseInt(n));
-            } else if (typeof unrandom === 'number') {
-              args = [unrandom];
-            } else {
-              args = [];
-            }
-            return overwriteRandom(page, ...args);
-          })
-          .then(function () {
-            return overwriteTime(page, animationFrameDuration);
-          })
-          .then(function () {
-            log('Going to ' + url + '...');
-            return page.goto(url, { waitUntil: 'networkidle0' });
-          })
-          .then(function () {
-            log('Page loaded');
-            if ('preparePage' in config) {
-              log('Prepare page before screenshot');
-              return config.preparePage(page);
-            }
-          })
-          .then(function () {
-            log('Page loaded and prepared');
-            return new Promise(function (resolve) {
-              setTimeout(resolve, startWaitMs);
-            });
-          })
-          .then(function () {
-            if (config.selector) {
-              return getSelectorDimensions(page, config.selector).then(function (
-                dimensions
-              ) {
-                if (!dimensions) {
-                  log('Warning: no element found for ' + config.selector);
-                  return;
-                }
-                return dimensions;
-              });
-            }
-          })
-          .then(function (dimensions) {
-            var browserFrames = getBrowserFrames(page.mainFrame());
-            var frameCount = 0;
-            var viewport = page.viewport();
-            var x = config.xOffset || config.left || 0;
-            var y = config.yOffset || config.top || 0;
-            var right = config.right || 0;
-            var bottom = config.bottom || 0;
-            var width;
-            var height;
-            if (dimensions) {
-              width = config.width || dimensions.width - x - right;
-              height = config.height || dimensions.height - y - bottom;
-              x += dimensions.scrollX + dimensions.left;
-              y += dimensions.scrollY + dimensions.top;
-            } else {
-              width = config.width || viewport.width - x - right;
-              height = config.height || viewport.height - y - bottom;
-            }
-            width = Math.ceil(width);
-            if (config.roundToEvenWidth && width % 2 === 1) {
-              width++;
-            }
-            height = Math.ceil(height);
-            if (config.roundToEvenHeight && height % 2 === 1) {
-              height++;
-            }
-            var screenshotClip = {
-              x: x,
-              y: y,
-              width: width,
-              height: height
-            };
-            return promiseLoop(
-              function () {
-                return frameCount++ < framesToCapture;
-              },
-              function () {
-                return goToTime(
-                  browserFrames,
-                  delayMs + frameNumToTime(frameCount, framesToCapture)
-                ).then(function () {
-                  var fileName = fileNameConverter(frameCount, framesToCapture);
-                  var filePath;
-                  if (fileName) {
-                    filePath = path.resolve(outputPath, fileName);
-                    makeFileDirectoryIfNeeded(filePath);
-                  } else {
-                    filePath = undefined;
-                  }
-                  if (screenshotClip.height <= 0) {
-                    throw new Error(
-                      'Capture height is ' +
-                        (screenshotClip.height < 0 ? 'negative!' : '0!')
-                    );
-                  }
-                  if (screenshotClip.width <= 0) {
-                    throw new Error(
-                      'Capture width is ' +
-                        (screenshotClip.width < 0 ? 'negative!' : '0!')
-                    );
-                  }
-                  log(
-                    'Capturing Frame ' +
-                      frameCount +
-                      (filePath ? ' to ' + filePath : '') +
-                      '...'
-                  );
-                  return page
-                    .screenshot({
-                      path: filePath,
-                      clip: screenshotClip,
-                      omitBackground: config.transparentBackground
-                        ? true
-                        : false
-                    })
-                    .then(function (buffer) {
-                      if (frameProcessor) {
-                        return frameProcessor(
-                          buffer,
-                          frameCount,
-                          framesToCapture
-                        );
-                      }
-                    });
-                });
-              }
-            );
+            return dimensions;
           });
-      })
-      .then(function () {
-        return browser.close();
-      })
-      .catch(function (err) {
-        log(err);
+        }
+      }).then(function (dimensions) {
+        var browserFrames = getBrowserFrames(page.mainFrame());
+        var frameCount = 0;
+        var viewport = page.viewport();
+        var x = config.xOffset || config.left || 0;
+        var y = config.yOffset || config.top || 0;
+        var right = config.right || 0;
+        var bottom = config.bottom || 0;
+        var width;
+        var height;
+        if (dimensions) {
+          width = config.width || (dimensions.width - x - right);
+          height = config.height || (dimensions.height - y - bottom);
+          x += dimensions.scrollX + dimensions.left;
+          y += dimensions.scrollY + dimensions.top;
+        } else {
+          width = config.width || (viewport.width - x - right);
+          height = config.height || (viewport.height - y - bottom);
+        }
+        width = Math.ceil(width);
+        if (config.roundToEvenWidth && (width % 2 === 1)) {
+          width++;
+        }
+        height = Math.ceil(height);
+        if (config.roundToEvenHeight && (height % 2 === 1)) {
+          height++;
+        }
+        var screenshotClip = {
+          x: x,
+          y: y,
+          width: width,
+          height: height
+        };
+        return promiseLoop(function () {
+          return frameCount++ < framesToCapture;
+        }, function () {
+          return goToTime(browserFrames, delayMs + frameNumToTime(frameCount, framesToCapture)).then(function () {
+            var fileName = fileNameConverter(frameCount, framesToCapture);
+            var filePath;
+            if (fileName) {
+              filePath = path.resolve(outputPath, fileName);
+              makeFileDirectoryIfNeeded(filePath);
+            } else {
+              filePath = undefined;
+            }
+            if (screenshotClip.height <= 0) {
+              throw new Error('Capture height is ' + (screenshotClip.height < 0 ? 'negative!' : '0!'));
+            }
+            if (screenshotClip.width <= 0) {
+              throw new Error('Capture width is ' + (screenshotClip.width < 0 ? 'negative!' : '0!'));
+            }
+            log('Capturing Frame ' + frameCount + (filePath ? ' to ' + filePath : '') + '...');
+            return page.screenshot({
+              path: filePath,
+              clip: screenshotClip,
+              omitBackground: config.transparentBackground ? true : false
+            }).then(function (buffer) {
+              if (frameProcessor) {
+                return frameProcessor(buffer, frameCount, framesToCapture);
+              }
+            });
+          });
+        });
       });
+    }).then(function () {
+      return browser.close();
+    }).catch(function (err) {
+      log(err);
+    });
   });
 };
