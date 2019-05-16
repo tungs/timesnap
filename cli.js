@@ -69,6 +69,8 @@ commander
     // TODO: make a more sophisticated parser for options that can handle quote marks
     return str.split(' ');
   })
+  .option('--no-headless', 'Chromium/Chrome runs in a window instead of headless mode')
+  .option('--executable-path <path>', 'Uses Chromium/Chrome application at specified path for puppeteer')
   .parse(process.argv);
 
 commander.url = commander.args[0] || 'index.html';

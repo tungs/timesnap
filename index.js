@@ -427,6 +427,8 @@ module.exports = function (config) {
 
   const launchOptions = {
     dumpio: !config.quiet && !config.logToStdErr,
+    headless: (config.headless !== undefined ? config.headless : true),
+    executablePath: config.executablePath,
     args: config.launchArguments || []
   };
 
