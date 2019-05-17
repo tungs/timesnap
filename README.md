@@ -267,6 +267,7 @@ The Node API is structured similarly to the command line options, but there are 
         * `screenshotData` &lt;[Buffer][]&gt; A buffer of the screenshot data.
         * `frameNumber` &lt;[number][]&gt; The current frame number (1 based).
         * `totalFrames` &lt;[number][]&gt; The total number of frames.
+    * <a name="js-config-preparePage" href="#js-config-preparePage">#</a> `preparePage` &lt;[function][]&gt; A setup function that will be called one time before taking screenshots.
 
 * <a name="js-api-return" href="#js-api-return">#</a> returns: &lt;[Promise][]&gt; resolves after all the frames have been captured.
 

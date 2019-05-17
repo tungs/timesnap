@@ -470,6 +470,12 @@ module.exports = function (config) {
         return page.goto(url, { waitUntil: 'networkidle0' });
       }).then(function () {
         log('Page loaded');
+        if ('preparePage' in config) {
+          log('Prepare page before screenshot');
+          return config.preparePage(page);
+        }
+      }).then(function () {
+        log('Page loaded and prepared');
         return new Promise(function (resolve) {
           setTimeout(resolve, startWaitMs);
         });
