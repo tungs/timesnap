@@ -226,7 +226,7 @@ var pages = [
 
 ### <a name="node-api" href="#node-api">#</a> Node API
 
-The Node API is structured similarly to the command line options, but there are a few options for the Node API that are not accessible through the command line interface: `config.logToStdErr`, and `config.frameProcessor`.
+The Node API is structured similarly to the command line options, but there are a few options for the Node API that are not accessible through the command line interface: [`config.logToStdErr`](#js-config-log-to-std-err), [`config.frameProcessor`](#js-config-frame-processor), [`config.preparePage`](#js-config-prepare-page), and certain [`config.viewport`](#js-config-viewport) properties.
 
 **timesnap(config)**
 *  <a name="js-api-config" href="#js-api-config">#</a> `config` &lt;[Object][]&gt;
@@ -267,7 +267,8 @@ The Node API is structured similarly to the command line options, but there are 
         * `screenshotData` &lt;[Buffer][]&gt; A buffer of the screenshot data.
         * `frameNumber` &lt;[number][]&gt; The current frame number (1 based).
         * `totalFrames` &lt;[number][]&gt; The total number of frames.
-    * <a name="js-config-preparePage" href="#js-config-preparePage">#</a> `preparePage` &lt;[function][]&gt; A setup function that will be called one time before taking screenshots.
+    * <a name="js-config-prepare-page" href="#js-config-prepare-page">#</a> `preparePage` &lt;[function][]([Page][])&gt; A setup function that will be called one time before taking screenshots. If it returns a promise, capture will be paused until the promise resolves.
+        * `page` &lt;[Buffer][]&gt; The puppeteer instance of the page being captured.
 
 * <a name="js-api-return" href="#js-api-return">#</a> returns: &lt;[Promise][]&gt; resolves after all the frames have been captured.
 
@@ -285,3 +286,4 @@ This work was inspired by [a talk by Noah Veltman](https://github.com/veltman/d3
 [Buffer]: https://nodejs.org/api/buffer.html#buffer_class_buffer
 [Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
 [CSS selector]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors
+[Page]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-page
