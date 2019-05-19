@@ -471,11 +471,12 @@ module.exports = function (config) {
       }).then(function () {
         log('Page loaded');
         if ('preparePage' in config) {
-          log('Prepare page before screenshot');
-          return config.preparePage(page);
+          log('Preparing page before screenshots...');
+          return Promise.resolve(config.preparePage(page)).then(function () {
+            log('Page prepared');
+          });
         }
       }).then(function () {
-        log('Page loaded and prepared');
         return new Promise(function (resolve) {
           setTimeout(resolve, startWaitMs);
         });
@@ -525,7 +526,19 @@ module.exports = function (config) {
         return promiseLoop(function () {
           return frameCount++ < framesToCapture;
         }, function () {
-          return goToTime(browserFrames, delayMs + frameNumToTime(frameCount, framesToCapture)).then(function () {
+          var p = goToTime(browserFrames, delayMs + frameNumToTime(frameCount, framesToCapture));
+          // because this section is run often and there is a small performance
+          // penalty of using .then(), we'll limit the use of .then()
+          // to only if there's something to do
+          if (config.preparePageForScreenshot) {
+            p = p.then(function () {
+              log('Preparing page for screenshot...');
+              return config.preparePageForScreenshot(page, frameCount, framesToCapture);
+            }).then(function () {
+              log('Page prepared');
+            });
+          }
+          p = p.then(function () {
             var fileName = fileNameConverter(frameCount, framesToCapture);
             var filePath;
             if (fileName) {
@@ -545,12 +558,14 @@ module.exports = function (config) {
               path: filePath,
               clip: screenshotClip,
               omitBackground: config.transparentBackground ? true : false
-            }).then(function (buffer) {
-              if (frameProcessor) {
-                return frameProcessor(buffer, frameCount, framesToCapture);
-              }
             });
           });
+          if (frameProcessor) {
+            p = p.then(function (buffer) {
+              return frameProcessor(buffer, frameCount, framesToCapture);
+            });
+          }
+          return p;
         });
       });
     }).then(function () {
