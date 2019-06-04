@@ -386,7 +386,7 @@ module.exports = function (config) {
   if (fps > 60) {
     animationFrameDuration = frameDuration;
   } else {
-    animationFrameDuration = 1000/60;
+    animationFrameDuration = 1000/fps;
   }
 
   if (!frameNumToTime) {
