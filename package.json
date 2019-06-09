@@ -14,7 +14,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "lint": "eslint *.js"
+    "lint": "eslint *.js './lib/**/*.js'"
   },
   "bin": {
     "timesnap": "./cli.js"
