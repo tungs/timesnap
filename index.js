@@ -78,11 +78,12 @@ module.exports = function (config) {
     }
   }
 
-  frameDuration = 1000/fps;
-  if (fps > 60) {
-    animationFrameDuration = frameDuration;
+  frameDuration = 1000 / fps;
+  var maximumAnimationFrameDuration = config.maximumAnimationFrameDuration;
+  if (maximumAnimationFrameDuration && frameDuration > maximumAnimationFrameDuration) {
+    animationFrameDuration = frameDuration / Math.ceil(frameDuration / maximumAnimationFrameDuration);
   } else {
-    animationFrameDuration = 1000/60;
+    animationFrameDuration = frameDuration;
   }
 
   if (!frameNumToTime) {
