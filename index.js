@@ -32,19 +32,17 @@
 
 const puppeteer = require('puppeteer');
 const path = require('path');
-const sprintf = require('sprintf-js').sprintf;
 const defaultDuration = 5;
 const defaultFPS = 60;
 const { overwriteRandom } = require('./lib/overwrite-random');
 const { overwriteTime, goToTime } = require('./lib/overwrite-time');
-const { promiseLoop, getBrowserFrames, getSelectorDimensions, makeFileDirectoryIfNeeded } = require('./lib/utils');
+const { promiseLoop, getBrowserFrames } = require('./lib/utils');
 
 module.exports = function (config) {
   config = Object.assign({}, config || {});
   var url = config.url || 'index.html';
   var delayMs = 1000 * (config.start || 0);
   var startWaitMs = 1000 * (config.startDelay || 0);
-  var frameProcessor = config.frameProcessor;
   var frameNumToTime = config.frameNumToTime;
   var unrandom = config.unrandomize;
   var fps = config.fps, frameDuration;
@@ -92,24 +90,6 @@ module.exports = function (config) {
     };
   }
 
-  var fileNameConverter = config.fileNameConverter;
-  if (!fileNameConverter) {
-    if (config.outputPattern) {
-      fileNameConverter = function (num) {
-        return sprintf(config.outputPattern, num);
-      };
-    } else if (frameProcessor && !config.outputDirectory) {
-      fileNameConverter = function () {
-        return undefined;
-      };
-    } else {
-      fileNameConverter = function (num, maxNum) {
-        var outputPattern = '%0' + maxNum.toString().length + 'd.png';
-        return sprintf(outputPattern, num);
-      };
-    }
-  }
-
   const log = function () {
     if (!config.quiet) {
       if (config.logToStdErr) {
@@ -131,6 +111,12 @@ module.exports = function (config) {
 
   return puppeteer.launch(launchOptions).then(function (browser) {
     return browser.newPage().then(function (page) {
+      config = Object.assign({
+        log,
+        outputPath,
+        page
+      }, config);
+      var capturer = require('./lib/capture-screenshot')(config);
       return Promise.resolve().then(function () {
         if (config.viewport) {
           if (!config.viewport.width) {
@@ -161,48 +147,12 @@ module.exports = function (config) {
           setTimeout(resolve, startWaitMs);
         });
       }).then(function () {
-        if (config.selector) {
-          return getSelectorDimensions(page, config.selector).then(function (dimensions) {
-            if (!dimensions) {
-              log('Warning: no element found for ' + config.selector);
-              return;
-            }
-            return dimensions;
-          });
+        if (capturer.beforeCapture) {
+          return capturer.beforeCapture(config);
         }
-      }).then(function (dimensions) {
+      }).then(function () {
         var browserFrames = getBrowserFrames(page.mainFrame());
         var frameCount = 0;
-        var viewport = page.viewport();
-        var x = config.xOffset || config.left || 0;
-        var y = config.yOffset || config.top || 0;
-        var right = config.right || 0;
-        var bottom = config.bottom || 0;
-        var width;
-        var height;
-        if (dimensions) {
-          width = config.width || (dimensions.width - x - right);
-          height = config.height || (dimensions.height - y - bottom);
-          x += dimensions.scrollX + dimensions.left;
-          y += dimensions.scrollY + dimensions.top;
-        } else {
-          width = config.width || (viewport.width - x - right);
-          height = config.height || (viewport.height - y - bottom);
-        }
-        width = Math.ceil(width);
-        if (config.roundToEvenWidth && (width % 2 === 1)) {
-          width++;
-        }
-        height = Math.ceil(height);
-        if (config.roundToEvenHeight && (height % 2 === 1)) {
-          height++;
-        }
-        var screenshotClip = {
-          x: x,
-          y: y,
-          width: width,
-          height: height
-        };
         return promiseLoop(function () {
           return frameCount++ < framesToCapture;
         }, function () {
@@ -218,31 +168,9 @@ module.exports = function (config) {
               log('Page prepared');
             });
           }
-          p = p.then(function () {
-            var fileName = fileNameConverter(frameCount, framesToCapture);
-            var filePath;
-            if (fileName) {
-              filePath = path.resolve(outputPath, fileName);
-              makeFileDirectoryIfNeeded(filePath);
-            } else {
-              filePath = undefined;
-            }
-            if (screenshotClip.height <= 0) {
-              throw new Error('Capture height is ' + (screenshotClip.height < 0 ? 'negative!' : '0!'));
-            }
-            if (screenshotClip.width <= 0) {
-              throw new Error('Capture width is ' + (screenshotClip.width < 0 ? 'negative!' : '0!'));
-            }
-            log('Capturing Frame ' + frameCount + (filePath ? ' to ' + filePath : '') + '...');
-            return page.screenshot({
-              path: filePath,
-              clip: screenshotClip,
-              omitBackground: config.transparentBackground ? true : false
-            });
-          });
-          if (frameProcessor) {
-            p = p.then(function (buffer) {
-              return frameProcessor(buffer, frameCount, framesToCapture);
+          if (capturer.capture) {
+            p = p.then(function () {
+              return capturer.capture(config, frameCount, framesToCapture);
             });
           }
           return p;
