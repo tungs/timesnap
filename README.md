@@ -282,11 +282,11 @@ This work was inspired by [a talk by Noah Veltman](https://github.com/veltman/d3
 
 [Object]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object
 [Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array
+[Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type
 [number]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type
 [boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type
-[function]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function
-[Buffer]: https://nodejs.org/api/buffer.html#buffer_class_buffer
-[Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
+[function]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions
 [CSS selector]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors
+[Buffer]: https://nodejs.org/api/buffer.html#buffer_class_buffer
 [Page]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-page
