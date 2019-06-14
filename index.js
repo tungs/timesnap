@@ -116,7 +116,12 @@ module.exports = function (config) {
         outputPath,
         page
       }, config);
-      var capturer = require('./lib/capture-screenshot')(config);
+      var capturer;
+      if (config.canvasMode) {
+        capturer = require('./lib/capture-canvas')(config);
+      } else {
+        capturer = require('./lib/capture-screenshot')(config);
+      }
       return Promise.resolve().then(function () {
         if (config.viewport) {
           if (!config.viewport.width) {
@@ -153,6 +158,7 @@ module.exports = function (config) {
       }).then(function () {
         var browserFrames = getBrowserFrames(page.mainFrame());
         var frameCount = 0;
+        var startCaptureTime = new Date().getTime();
         return promiseLoop(function () {
           return frameCount++ < framesToCapture;
         }, function () {
@@ -174,6 +180,11 @@ module.exports = function (config) {
             });
           }
           return p;
+        }).then(function () {
+          log('Elapsed capture time: ' + (new Date().getTime() - startCaptureTime));
+          if (capturer.afterCapture) {
+            return capturer.afterCapture();
+          }
         });
       });
     }).then(function () {
