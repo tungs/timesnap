@@ -35,7 +35,6 @@ const path = require('path');
 const defaultDuration = 5;
 const defaultFPS = 60;
 const { overwriteRandom } = require('./lib/overwrite-random');
-const { overwriteTime, goToTime } = require('./lib/overwrite-time');
 const { promiseLoop, getBrowserFrames } = require('./lib/utils');
 
 module.exports = function (config) {
@@ -116,11 +115,23 @@ module.exports = function (config) {
         outputPath,
         page
       }, config);
-      var capturer;
+      var capturer, timeHandler;
       if (config.canvasMode) {
-        capturer = require('./lib/capture-canvas')(config);
+        if (typeof config.canvasMode === 'string' && config.canvasMode.startsWith('immediate')) {
+          // remove starts of 'immediate' or 'immediate:'
+          config.canvasMode = config.canvasMode.replace(/^immediate:?/, '');
+          timeHandler = require('./lib/immediate-canvas-handler')(config);
+          capturer = timeHandler;
+          log('Capture Mode: Immediate Canvas');
+        } else {
+          timeHandler = require('./lib/overwrite-time');
+          capturer = require('./lib/capture-canvas')(config);
+          log('Capture Mode: Canvas');
+        }
       } else {
+        timeHandler = require('./lib/overwrite-time');
         capturer = require('./lib/capture-screenshot')(config);
+        log('Capture Mode: Screenshot');
       }
       return Promise.resolve().then(function () {
         if (config.viewport) {
@@ -135,7 +146,7 @@ module.exports = function (config) {
       }).then(function (){
         return overwriteRandom(page, unrandom, log);
       }).then(function () {
-        return overwriteTime(page, animationFrameDuration);
+        return timeHandler.overwriteTime(page, animationFrameDuration);
       }).then(function () {
         log('Going to ' + url + '...');
         return page.goto(url, { waitUntil: 'networkidle0' });
@@ -162,7 +173,7 @@ module.exports = function (config) {
         return promiseLoop(function () {
           return frameCount++ < framesToCapture;
         }, function () {
-          var p = goToTime(browserFrames, delayMs + frameNumToTime(frameCount, framesToCapture));
+          var p = timeHandler.goToTime(browserFrames, delayMs + frameNumToTime(frameCount, framesToCapture));
           // because this section is run often and there is a small performance
           // penalty of using .then(), we'll limit the use of .then()
           // to only if there's something to do
