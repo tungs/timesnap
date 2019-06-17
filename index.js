@@ -121,8 +121,7 @@ module.exports = function (config) {
         if (typeof config.canvasMode === 'string' && config.canvasMode.startsWith('immediate')) {
           // remove starts of 'immediate' or 'immediate:'
           config.canvasMode = config.canvasMode.replace(/^immediate:?/, '');
-          timeHandler = require('./lib/immediate-canvas-handler')(config);
-          capturer = timeHandler;
+          ({ timeHandler, capturer } = require('./lib/immediate-canvas-handler')(config));
           log('Capture Mode: Immediate Canvas');
         } else {
           timeHandler = require('./lib/overwrite-time');
