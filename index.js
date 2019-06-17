@@ -113,7 +113,8 @@ module.exports = function (config) {
       config = Object.assign({
         log,
         outputPath,
-        page
+        page,
+        framesToCapture
       }, config);
       var capturer, timeHandler;
       if (config.canvasMode) {
