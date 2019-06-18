@@ -64,6 +64,7 @@ commander
   .option('-b, --bottom <pixels>', 'bottom edge of capture, in pixels', parseFloat)
   .option('--start-delay <n seconds>', 'Wait n real seconds after loading.', parseFloat, 0)
   .option('-u, --unrandomize [seed]', 'Overwrite Math.random() with a PRNG with up to 4 optional, comma-separated integer seeds')
+  .option('--canvas-mode [type]', '(experimental) Switches to canvas mode, capturing the canvas selected by --selector as image type (default: png)')
   .option('-q, --quiet', 'Suppress console logging')
   .option('--executable-path <path>', 'Uses Chromium/Chrome application at specified path for puppeteer')
   .option('-L, --launch-arguments <arguments>', 'Custom launch arguments for Puppeteer browser', function (str) {
