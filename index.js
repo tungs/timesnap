@@ -173,7 +173,7 @@ module.exports = function (config) {
         return promiseLoop(function () {
           return frameCount++ < framesToCapture;
         }, function () {
-          var p = timeHandler.goToTime(browserFrames, delayMs + frameNumToTime(frameCount, framesToCapture));
+          var p = timeHandler.goToTimeAndAnimate(browserFrames, delayMs + frameNumToTime(frameCount, framesToCapture));
           // because this section is run often and there is a small performance
           // penalty of using .then(), we'll limit the use of .then()
           // to only if there's something to do
