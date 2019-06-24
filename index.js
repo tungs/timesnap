@@ -47,7 +47,6 @@ module.exports = function (config) {
   var fps = config.fps, frameDuration;
   var framesToCapture;
   var outputPath = path.resolve(process.cwd(), (config.outputDirectory || './'));
-  var animationFrameDuration;
 
   if (url.indexOf('://') === -1) {
     // assume it is a file path
@@ -76,12 +75,6 @@ module.exports = function (config) {
   }
 
   frameDuration = 1000 / fps;
-  var maximumAnimationFrameDuration = config.maximumAnimationFrameDuration;
-  if (maximumAnimationFrameDuration && frameDuration > maximumAnimationFrameDuration) {
-    animationFrameDuration = frameDuration / Math.ceil(frameDuration / maximumAnimationFrameDuration);
-  } else {
-    animationFrameDuration = frameDuration;
-  }
 
   if (!frameNumToTime) {
     frameNumToTime = function (frameCount) {
@@ -143,10 +136,10 @@ module.exports = function (config) {
           }
           return page.setViewport(config.viewport);
         }
-      }).then(function (){
+      }).then(function () {
         return overwriteRandom(page, unrandom, log);
       }).then(function () {
-        return timeHandler.overwriteTime(page, animationFrameDuration);
+        return timeHandler.overwriteTime(page);
       }).then(function () {
         log('Going to ' + url + '...');
         return page.goto(url, { waitUntil: 'networkidle0' });
@@ -168,27 +161,85 @@ module.exports = function (config) {
         }
       }).then(function () {
         var browserFrames = getBrowserFrames(page.mainFrame());
-        var frameCount = 0;
-        var startCaptureTime = new Date().getTime();
-        return promiseLoop(function () {
-          return frameCount++ < framesToCapture;
-        }, function () {
-          var p = timeHandler.goToTimeAndAnimate(browserFrames, delayMs + frameNumToTime(frameCount, framesToCapture));
-          // because this section is run often and there is a small performance
-          // penalty of using .then(), we'll limit the use of .then()
-          // to only if there's something to do
-          if (config.preparePageForScreenshot) {
-            p = p.then(function () {
-              log('Preparing page for screenshot...');
-              return config.preparePageForScreenshot(page, frameCount, framesToCapture);
-            }).then(function () {
-              log('Page prepared');
-            });
+        // A marker is an action at a specific time
+        var markers = [];
+        var captureMarkers = [];
+        var markerId = 0;
+        for (let i = 1; i <= framesToCapture; i++) {
+          captureMarkers.push({
+            time: delayMs + frameNumToTime(i, framesToCapture),
+            frameCount: i,
+            id: markerId,
+            type: 'Capture'
+          });
+          markerId++;
+        }
+
+        var addAnimationGapThreshold = 100;
+        var addAnimationFrameTime = 20;
+        if (captureMarkers.length && captureMarkers[0].time > addAnimationGapThreshold) {
+          markers.push({
+            time: addAnimationFrameTime,
+            type: 'Only Animate',
+            id: markerId
+          });
+          markerId++;
+        }
+
+        var lastMarkerTime = 0;
+        var maximumAnimationFrameDuration = config.maximumAnimationFrameDuration;
+        captureMarkers.forEach(function (e) {
+          if (maximumAnimationFrameDuration) {
+            let frameDuration = e.time - lastMarkerTime;
+            let framesForDuration = Math.ceil(frameDuration / maximumAnimationFrameDuration);
+            for (let i = 1; i < framesForDuration; i++) {
+              markers.push({
+                time: lastMarkerTime + (i * frameDuration / framesForDuration),
+                type: 'Only Animate',
+                id: markerId
+              });
+              markerId++;
+            }
           }
-          if (capturer.capture) {
-            p = p.then(function () {
-              return capturer.capture(config, frameCount, framesToCapture);
-            });
+          markers.push(e);
+          lastMarkerTime = e.time;
+        });
+
+        markers = markers.sort(function (a, b) {
+          if (a.time !== b.time) {
+            return a.time - b.time;
+          }
+          return a.id - b.id;
+        });
+
+        var startCaptureTime = new Date().getTime();
+        var markerIndex = 0;
+        return promiseLoop(function () {
+          return markerIndex < markers.length;
+        }, function () {
+          var e = markers[markerIndex];
+          var p;
+          markerIndex++;
+          if (e.type === 'Capture') {
+            p = timeHandler.goToTimeAndAnimateForCapture(browserFrames, e.time);
+            // because this section is run often and there is a small performance
+            // penalty of using .then(), we'll limit the use of .then()
+            // to only if there's something to do
+            if (config.preparePageForScreenshot) {
+              p = p.then(function () {
+                log('Preparing page for screenshot...');
+                return config.preparePageForScreenshot(page, e.frameCount, framesToCapture);
+              }).then(function () {
+                log('Page prepared');
+              });
+            }
+            if (capturer.capture) {
+              p = p.then(function () {
+                return capturer.capture(config, e.frameCount, framesToCapture);
+              });
+            }
+          } else if (e.type === 'Only Animate') {
+            p = timeHandler.goToTimeAndAnimate(browserFrames, e.time);
           }
           return p;
         }).then(function () {
