@@ -110,10 +110,10 @@ module.exports = function (config) {
         framesToCapture
       }, config);
       var capturer, timeHandler;
-      if (config.canvasMode) {
-        if (typeof config.canvasMode === 'string' && config.canvasMode.startsWith('immediate')) {
+      if (config.canvasCaptureMode) {
+        if (typeof config.canvasCaptureMode === 'string' && config.canvasCaptureMode.startsWith('immediate')) {
           // remove starts of 'immediate' or 'immediate:'
-          config.canvasMode = config.canvasMode.replace(/^immediate:?/, '');
+          config.canvasCaptureMode = config.canvasCaptureMode.replace(/^immediate:?/, '');
           ({ timeHandler, capturer } = require('./lib/immediate-canvas-handler')(config));
           log('Capture Mode: Immediate Canvas');
         } else {
