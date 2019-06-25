@@ -9,11 +9,6 @@ To record screenshots and compile them into a video using only one command, see 
 ## <a name="limitations" href="#limitations">#</a> **timesnap** Limitations
 **timesnap** only overwrites JavaScript functions, so pages where changes occur via other means (e.g. through video or transitions/animations from CSS rules) will likely not render as intended.
 
-## <a name="modes" href="#modes">#</a> **timesnap** Modes
-**timesnap** can capture frames using one of two modes:
-  * <a name="screenshot-capture-mode" href="#screenshot-capture-mode">#</a> **Screenshot capture mode** (default) uses puppeteer's built-in API to take screenshots of Chromium/Chrome windows. It can capture most parts of a webpage (e.g. div, svg, canvas) as they are rendered on the webpage. It can crop images, round to even widths/heights, but it usually runs slower than canvas capture mode.
-  * <a name="canvas-capture-mode" href="#canvas-capture-mode">#</a> **Canvas capture mode** (experimental) directly copies data from a canvas element and is often faster than using screenshot capture mode. If the background of the canvas is transparent, it may show up as transparent or black depending on the captured image format. Configuration options that adjust the crop and round to an even width/height do not currently have an effect. To use this mode, [use the `--canvas-capture-mode` option from the command line](#cli-options-canvas-capture-mode) or [set `config.canvasCaptureMode` from Node.js](#js-config-canvas-capture-mode). Also specify the canvas using a css selector, [using the `--selector` option from the command line](#cli-options-selector) or [setting `config.selector` from Node.js](#js-config-selector), otherwise it uses the first canvas element.
-
 ## Read Me Contents
 
 * [From the Command Line](#from-cli)
@@ -26,6 +21,7 @@ To record screenshots and compile them into a video using only one command, see 
   * [Node Install](#node-install)
   * [Node Examples](#node-examples)
   * [Node API](#node-api)
+* [timesnap Modes](#modes)
 * [How it works](#how-it-works)
 
 ## <a name="from-cli" href="#from-cli">#</a> From the Command Line
@@ -283,6 +279,11 @@ The Node API is structured similarly to the command line options, but there are 
         * `frameNumber` &lt;[number][]&gt; The current frame number (1 based).
         * `totalFrames` &lt;[number][]&gt; The total number of frames.
 * <a name="js-api-return" href="#js-api-return">#</a> returns: &lt;[Promise][]&gt; resolves after all the frames have been captured.
+
+## <a name="modes" href="#modes">#</a> **timesnap** Modes
+**timesnap** can capture frames using one of two modes:
+  * <a name="screenshot-capture-mode" href="#screenshot-capture-mode">#</a> **Screenshot capture mode** (default) uses puppeteer's built-in API to take screenshots of Chromium/Chrome windows. It can capture most parts of a webpage (e.g. div, svg, canvas) as they are rendered on the webpage. It can crop images, round to even widths/heights, but it usually runs slower than canvas capture mode.
+  * <a name="canvas-capture-mode" href="#canvas-capture-mode">#</a> **Canvas capture mode** (experimental) directly copies data from a canvas element and is often faster than using screenshot capture mode. If the background of the canvas is transparent, it may show up as transparent or black depending on the captured image format. Configuration options that adjust the crop and round to an even width/height do not currently have an effect. To use this mode, [use the `--canvas-capture-mode` option from the command line](#cli-options-canvas-capture-mode) or [set `config.canvasCaptureMode` from Node.js](#js-config-canvas-capture-mode). Also specify the canvas using a css selector, [using the `--selector` option from the command line](#cli-options-selector) or [setting `config.selector` from Node.js](#js-config-selector), otherwise it uses the first canvas element.
 
 ## <a name="how-it-works" href="#how-it-works">#</a> How it works
 **timesnap** uses puppeteer's `page.evaluateOnNewDocument` feature to automatically overwrite a page's native time-handling JavaScript functions and objects (`new Date()`, `Date.now`, `performance.now`, `requestAnimationFrame`, `setTimeout`, `setInterval`, `cancelAnimationFrame`, `cancelTimeout`, and `cancelInterval`) to custom ones that use a virtual timeline, allowing for JavaScript computation to complete before taking a screenshot.
