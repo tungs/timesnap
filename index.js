@@ -106,10 +106,17 @@ module.exports = function (config) {
 
   return puppeteer.launch(launchOptions).then(function (browser) {
     return browser.newPage().then(function (page) {
+      // A marker is an action at a specific time
+      var markers = [];
+      var markerId = 0;
+      var addMarker = function ({time, type, data}) {
+        markers.push({ time, type, data, id: markerId++ });
+      };
       config = Object.assign({
         log,
         outputPath,
         page,
+        addMarker,
         framesToCapture
       }, config);
       var capturer, timeHandler;
@@ -168,48 +175,41 @@ module.exports = function (config) {
         }
       }).then(function () {
         var browserFrames = getBrowserFrames(page.mainFrame());
-        // A marker is an action at a specific time
-        var markers = [];
-        var captureMarkers = [];
-        var markerId = 0;
+        var captureTimes = [];
         for (let i = 1; i <= framesToCapture; i++) {
-          captureMarkers.push({
+          addMarker({
             time: delayMs + frameNumToTime(i, framesToCapture),
-            frameCount: i,
-            id: markerId,
-            type: 'Capture'
+            type: 'Capture',
+            data: { frameCount: i }
           });
-          markerId++;
+          captureTimes.push(delayMs + frameNumToTime(i, framesToCapture));
         }
 
+        // run 'requestAnimationFrame' early on, just in case if there
+        // is initialization code inside of it
         var addAnimationGapThreshold = 100;
         var addAnimationFrameTime = 20;
-        if (captureMarkers.length && captureMarkers[0].time > addAnimationGapThreshold) {
-          markers.push({
+        if (captureTimes.length && captureTimes[0] > addAnimationGapThreshold) {
+          addMarker({
             time: addAnimationFrameTime,
-            type: 'Only Animate',
-            id: markerId
+            type: 'Only Animate'
           });
-          markerId++;
         }
 
         var lastMarkerTime = 0;
         var maximumAnimationFrameDuration = config.maximumAnimationFrameDuration;
-        captureMarkers.forEach(function (e) {
+        captureTimes.forEach(function (time) {
           if (maximumAnimationFrameDuration) {
-            let frameDuration = e.time - lastMarkerTime;
+            let frameDuration = time - lastMarkerTime;
             let framesForDuration = Math.ceil(frameDuration / maximumAnimationFrameDuration);
             for (let i = 1; i < framesForDuration; i++) {
-              markers.push({
+              addMarker({
                 time: lastMarkerTime + (i * frameDuration / framesForDuration),
                 type: 'Only Animate',
-                id: markerId
               });
-              markerId++;
             }
           }
-          markers.push(e);
-          lastMarkerTime = e.time;
+          lastMarkerTime = time;
         });
 
         markers = markers.sort(function (a, b) {
@@ -224,29 +224,31 @@ module.exports = function (config) {
         return promiseLoop(function () {
           return markerIndex < markers.length;
         }, function () {
-          var e = markers[markerIndex];
+          var marker = markers[markerIndex];
           var p;
           markerIndex++;
-          if (e.type === 'Capture') {
-            p = timeHandler.goToTimeAndAnimateForCapture(browserFrames, e.time);
+          if (marker.type === 'Capture') {
+            p = timeHandler.goToTimeAndAnimateForCapture(browserFrames, marker.time);
             // because this section is run often and there is a small performance
             // penalty of using .then(), we'll limit the use of .then()
             // to only if there's something to do
             if (config.preparePageForScreenshot) {
               p = p.then(function () {
                 log('Preparing page for screenshot...');
-                return config.preparePageForScreenshot(page, e.frameCount, framesToCapture);
+                return config.preparePageForScreenshot(page, marker.data.frameCount, framesToCapture);
               }).then(function () {
                 log('Page prepared');
               });
             }
             if (capturer.capture) {
               p = p.then(function () {
-                return capturer.capture(config, e.frameCount, framesToCapture);
+                return capturer.capture(config, marker.data.frameCount, framesToCapture);
               });
             }
-          } else if (e.type === 'Only Animate') {
-            p = timeHandler.goToTimeAndAnimate(browserFrames, e.time);
+          } else if (marker.type === 'Only Animate') {
+            p = timeHandler.goToTimeAndAnimate(browserFrames, marker.time);
+          } else if (marker.type === 'Run Function') {
+            p = marker.data.fn(marker);
           }
           return p;
         }).then(function () {
