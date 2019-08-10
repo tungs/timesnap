@@ -35,7 +35,7 @@ const path = require('path');
 const defaultDuration = 5;
 const defaultFPS = 60;
 const { overwriteRandom } = require('./lib/overwrite-random');
-const { promiseLoop, getBrowserFrames } = require('./lib/utils');
+const { promiseLoop, getBrowserFrames, getBorwser } = require('./lib/utils');
 const initializePageUtils = require('./lib/page-utils');
 const initializeMediaTimeHandler = require('./lib/media-time-handler');
 
@@ -104,7 +104,8 @@ module.exports = function (config) {
     args: config.launchArguments || []
   };
 
-  return puppeteer.launch(launchOptions).then(function (browser) {
+
+  return getBorwser(config.remoteUrl,launchOptions).then(function (browser) {
     return browser.newPage().then(function (page) {
       config = Object.assign({
         log,

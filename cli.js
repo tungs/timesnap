@@ -67,6 +67,7 @@ commander
   .option('--canvas-capture-mode [type]', '(experimental) Switches to canvas mode, capturing the canvas selected by --selector as image type (default: png)')
   .option('-q, --quiet', 'Suppress console logging')
   .option('--executable-path <path>', 'Uses Chromium/Chrome application at specified path for puppeteer')
+  .option('--remote-url <path>', 'Connect to remote Chromium/Chrome instance using puppeteer.connect()')
   .option('-L, --launch-arguments <arguments>', 'Custom launch arguments for Puppeteer browser', function (str) {
     // TODO: make a more sophisticated parser for options that can handle quote marks
     return str.split(' ');
