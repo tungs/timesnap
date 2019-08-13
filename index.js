@@ -35,7 +35,7 @@ const path = require('path');
 const defaultDuration = 5;
 const defaultFPS = 60;
 const { overwriteRandom } = require('./lib/overwrite-random');
-const { promiseLoop, getBrowserFrames, getBorwser } = require('./lib/utils');
+const { promiseLoop, getBrowserFrames, getBrowser } = require('./lib/utils');
 const initializePageUtils = require('./lib/page-utils');
 const initializeMediaTimeHandler = require('./lib/media-time-handler');
 
