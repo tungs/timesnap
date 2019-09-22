@@ -104,8 +104,7 @@ module.exports = function (config) {
     args: config.launchArguments || []
   };
 
-
-  return getBorwser(config.remoteUrl,launchOptions).then(function (browser) {
+  return getBrowser(config, launchOptions).then(function (browser) {
     return browser.newPage().then(function (page) {
       config = Object.assign({
         log,
