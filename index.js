@@ -35,7 +35,7 @@ const path = require('path');
 const defaultDuration = 5;
 const defaultFPS = 60;
 const { overwriteRandom } = require('./lib/overwrite-random');
-const { promiseLoop, getBrowserFrames, getBrowser } = require('./lib/utils');
+const { promiseLoop, getBrowserFrames } = require('./lib/utils');
 const initializePageUtils = require('./lib/page-utils');
 const initializeMediaTimeHandler = require('./lib/media-time-handler');
 
@@ -102,6 +102,16 @@ module.exports = function (config) {
     headless: (config.headless !== undefined ? config.headless : true),
     executablePath: config.executablePath,
     args: config.launchArguments || []
+  };
+
+  const getBrowser = function (config, launchOptions) {
+    if (config.remoteUrl) {
+      let queryString = Object.keys(launchOptions).map(key => key + '=' + launchOptions[key]).join('&');
+      let remote = config.remoteUrl + '?' + queryString;
+      return puppeteer.connect({ browserWSEndpoint: remote });
+    } else {
+      return puppeteer.launch(launchOptions);
+    }
   };
 
   return getBrowser(config, launchOptions).then(function (browser) {
