@@ -106,9 +106,9 @@ module.exports = function (config) {
 
   const getBrowser = function (config, launchOptions) {
     if (config.browser) {
-      return config.browser;
+      return Promise.resolve(config.browser);
     } else if (config.launcher) {
-      return config.launcher(launchOptions);
+      return Promise.resolve(config.launcher(launchOptions));
     } else if (config.remoteUrl) {
       let queryString = Object.keys(launchOptions).map(key => key + '=' + launchOptions[key]).join('&');
       let remote = config.remoteUrl + '?' + queryString;
