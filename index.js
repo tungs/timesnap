@@ -184,12 +184,20 @@ module.exports = function (config) {
           setTimeout(resolve, startWaitMs);
         });
       }).then(function () {
-        if (capturer.beforeCapture) {
-          return capturer.beforeCapture(config);
-        }
-      }).then(function () {
         var browserFrames = getBrowserFrames(page.mainFrame());
         var captureTimes = [];
+        if (capturer.beforeCapture) {
+          // run beforeCapture right before any capture frames
+          addMarker({
+            time: delayMs + frameNumToTime(1, framesToCapture),
+            type: 'Run Function',
+            data: {
+              fn: function () {
+                return capturer.beforeCapture(config);
+              }
+            }
+          });
+        }
         for (let i = 1; i <= framesToCapture; i++) {
           addMarker({
             time: delayMs + frameNumToTime(i, framesToCapture),
