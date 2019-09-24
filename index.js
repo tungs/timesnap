@@ -104,7 +104,21 @@ module.exports = function (config) {
     args: config.launchArguments || []
   };
 
-  return puppeteer.launch(launchOptions).then(function (browser) {
+  const getBrowser = function (config, launchOptions) {
+    if (config.browser) {
+      return Promise.resolve(config.browser);
+    } else if (config.launcher) {
+      return Promise.resolve(config.launcher(launchOptions));
+    } else if (config.remoteUrl) {
+      let queryString = Object.keys(launchOptions).map(key => key + '=' + launchOptions[key]).join('&');
+      let remote = config.remoteUrl + '?' + queryString;
+      return puppeteer.connect({ browserWSEndpoint: remote });
+    } else {
+      return puppeteer.launch(launchOptions);
+    }
+  };
+
+  return getBrowser(config, launchOptions).then(function (browser) {
     return browser.newPage().then(function (page) {
       // A marker is an action at a specific time
       var markers = [];
