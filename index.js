@@ -169,8 +169,13 @@ module.exports = function (config) {
       }).then(function () {
         return initializeMediaTimeHandler(page);
       }).then(function () {
-        log('Going to ' + url + '...');
-        return page.goto(url, { waitUntil: 'networkidle0' });
+        if ('setPage' in config) {
+          log('Set page...');
+          return Promise.resolve(config.setPage(page));
+        } else {
+          log('Going to ' + url + '...');
+          return page.goto(url, { waitUntil: 'networkidle0' });
+        }
       }).then(function () {
         log('Page loaded');
         if ('preparePage' in config) {
