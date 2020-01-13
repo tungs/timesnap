@@ -74,7 +74,7 @@ commander
   })
   .option('--no-headless', 'Chromium/Chrome runs in a window instead of headless mode')
   .option('--screenshot-type <type>', 'Output image format for the screenshots, currently either png or jpeg')
-  .option('--screenshot-quality <level>', 'The quality level to use when screenshot type is jpeg', i => parseInt(i))
+  .option('--screenshot-quality <level>', 'The quality level to use when screenshot type is jpeg', parseFloat)
   .parse(process.argv);
 
 commander.url = commander.args[0] || 'index.html';
