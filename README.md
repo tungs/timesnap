@@ -160,6 +160,10 @@ Opens https://breathejs.org/examples/Drawing-US-Counties.html, sets the viewport
     * Arguments to pass to Puppeteer/Chromium, enclosed in quotes. Example: `--launch-arguments="--single-process"`. A list of arguments can be found [here](https://peter.sh/experiments/chromium-command-line-switches).
 * <a name="cli-options-no-headless" href="#cli-options-no-headless">#</a> No Headless: `--no-headless`
     * Runs Chromium/Chrome in windowed mode.
+* <a name="cli-options-screenshot-type" href="#cli-options-screenshot-type">#</a> Screenshot Type: `--screenshot-type` *type*
+    * Output image format for the screenshots. Puppeteer currently supports 'png' (default) and 'jpeg'.
+* <a name="cli-options-screenshot-quality" href="#cli-options-screenshot-quality">#</a> Screenshot Quality: `--screenshot-quality` *number*
+    * 1-100 Quality level to be used when screenshot type is 'jpeg'. Currently, puppeteer defaults this to '80'.
 * <a name="cli-options-start-delay" href="#cli-options-start-delay">#</a> Start Delay: `--start-delay` *n seconds*
     * Waits *n real seconds* after loading the page before starting the virtual timeline.
 * <a name="cli-options-quiet" href="#cli-options-quiet">#</a> Quiet: `-q`, `--quiet`
@@ -268,6 +272,8 @@ The Node API is structured similarly to the command line options, but there are 
      * <a name="js-config-remote-url" href="#js-config-remote-url">#</a> `remoteUrl` &lt;[string][]&gt; URL of remote Chromium/Chrome instance to connect using `puppeteer.connect()`.
     * <a name="js-config-launch-arguments" href="#js-config-launch-arguments">#</a> `launchArguments` &lt;[Array][] &lt;[string][]&gt;&gt; Extra arguments for Puppeteer/Chromium. Example: `['--single-process']`. A list of arguments can be found [here](https://peter.sh/experiments/chromium-command-line-switches).
     * <a name="js-config-headless" href="#js-config-headless">#</a> `headless` &lt;[boolean][]&gt; Runs puppeteer in headless (nonwindowed) mode (default: `true`).
+    * <a name="js-config-screenshot-type" href="#js-config-screenshot-type">#</a> `screenshotType` &lt;[number][]&gt; Output image format for the screenshots. Puppeteer currently supports 'png' (default) and 'jpeg'.
+    * <a name="js-config-screenshot-quality" href="#js-config-screenshot-quality">#</a> `screenshotQuality` &lt;[number][]&gt; 1-100 Quality level to be used when screenshot type is 'jpeg'. Currently, puppeteer defaults this to '80'.
     * <a name="js-config-start-delay" href="#js-config-start-delay">#</a> `startDelay` &lt;[number][]&gt; Waits `config.startDelay` real seconds after loading before starting (default: `0`).
     * <a name="js-config-quiet" href="#js-config-quiet">#</a> `quiet` &lt;[boolean][]&gt; Suppresses console logging.
     * <a name="js-config-log-to-std-err" href="#js-config-log-to-std-err">#</a> `logToStdErr` &lt;[boolean][]&gt; Logs to stderr instead of stdout. Doesn't do anything if `config.quiet` is set to true.
