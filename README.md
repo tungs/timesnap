@@ -2,7 +2,7 @@
 
 **timesnap** is a Node.js program that records screenshots of web pages that use JavaScript animations. It uses [puppeteer](https://github.com/GoogleChrome/puppeteer) to open a web page, overwrite its time-handling functions, and record snapshots at virtual times. For some web pages, this allows frames to be recorded slower than real time, while appearing smooth and consistent when recreated into a video.
 
-You can use **timesnap** from the command line or as a Node.js library. It requires Node v6.4.0 or higher and npm.
+You can use **timesnap** from the command line or as a Node.js library. It requires Node v8.9.0 or higher and npm.
 
 To record screenshots and compile them into a video using only one command, see **[timecut](https://github.com/tungs/timecut)**.
 
@@ -206,7 +206,7 @@ timesnap({
 });
 ```
 
-**<a name="node-example-multiple" href="#node-example-multiple">#</a> Multiple pages (Requires Node v7.6.0 or higher):**
+**<a name="node-example-multiple" href="#node-example-multiple">#</a> Multiple pages:**
 ```node
 const timesnap = require('timesnap');
 var pages = [
