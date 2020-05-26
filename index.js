@@ -248,6 +248,7 @@ module.exports = function (config) {
         }, function () {
           var marker = markers[markerIndex];
           var p;
+          var skipFrame = false;
           markerIndex++;
           if (marker.type === 'Capture') {
             p = timeHandler.goToTimeAndAnimateForCapture(browserFrames, marker.time);
@@ -258,12 +259,22 @@ module.exports = function (config) {
               p = p.then(function () {
                 log('Preparing page for screenshot...');
                 return config.preparePageForScreenshot(page, marker.data.frameCount, framesToCapture);
-              }).then(function () {
-                log('Page prepared');
+              }).then(function (skipCurrentFrame = false) {
+                skipFrame = skipCurrentFrame;
+
+                if (skipCurrentFrame) {
+                  log('Frame is skipped');
+                } else {
+                  log('Page prepared');
+                }
               });
             }
             if (capturer.capture) {
               p = p.then(function () {
+                if (skipFrame) {
+                  return;
+                }
+
                 return capturer.capture(config, marker.data.frameCount, framesToCapture);
               });
             }
