@@ -248,30 +248,40 @@ module.exports = function (config) {
         }, function () {
           var marker = markers[markerIndex];
           var p;
-          var skipFrame = false;
+
           markerIndex++;
           if (marker.type === 'Capture') {
             p = timeHandler.goToTimeAndAnimateForCapture(browserFrames, marker.time);
             // because this section is run often and there is a small performance
             // penalty of using .then(), we'll limit the use of .then()
             // to only if there's something to do
-            if (config.preparePageForScreenshot) {
+
+            if (config.skipScreenshot) {
               p = p.then(function () {
+                return config.skipScreenshot(page, marker.data.frameCount, framesToCapture);
+              })
+            }
+
+            if (config.preparePageForScreenshot) {
+              p = p.then(function (skipCurrentFrame = false) {
+                if (skipCurrentFrame === true) {  
+                  return skipCurrentFrame;
+                }
+
                 log('Preparing page for screenshot...');
                 return config.preparePageForScreenshot(page, marker.data.frameCount, framesToCapture);
               }).then(function (skipCurrentFrame = false) {
-                skipFrame = skipCurrentFrame;
-
-                if (skipCurrentFrame) {
-                  log('Frame is skipped');
-                } else {
-                  log('Page prepared');
+                if (skipCurrentFrame === true) {
+                  return skipCurrentFrame;
                 }
+
+                log('Page prepared');
               });
             }
             if (capturer.capture) {
-              p = p.then(function () {
-                if (skipFrame) {
+              p = p.then(function (skipCurrentFrame = false) {
+                if (skipCurrentFrame) {
+                  log('Skip screenshot for frame: ' + marker.data.frameCount);
                   return;
                 }
 
