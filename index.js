@@ -256,32 +256,38 @@ module.exports = function (config) {
             // penalty of using .then(), we'll limit the use of .then()
             // to only if there's something to do
 
-            if (config.skipScreenshot) {
+            var skipCurrentFrame;
+
+            if (config.shouldSkipFrame) {
               p = p.then(function () {
-                return config.skipScreenshot(page, marker.data.frameCount, framesToCapture);
+                skipCurrentFrame = config.shouldSkipFrame({
+                  page: page,
+                  frameCount: marker.data.frameCount,
+                  framesToCapture: framesToCapture
+                });
               })
             }
 
             if (config.preparePageForScreenshot) {
-              p = p.then(function (skipCurrentFrame = false) {
-                if (skipCurrentFrame === true) {  
-                  return skipCurrentFrame;
+              p = p.then(function () {
+                if (skipCurrentFrame) {
+                  log('Skipping frame: ' + marker.data.frameCount);
+                  return;
                 }
 
                 log('Preparing page for screenshot...');
                 return config.preparePageForScreenshot(page, marker.data.frameCount, framesToCapture);
-              }).then(function (skipCurrentFrame = false) {
-                if (skipCurrentFrame === true) {
-                  return skipCurrentFrame;
+              }).then(function () {
+                if (skipCurrentFrame) {
+                  return;
                 }
 
                 log('Page prepared');
               });
             }
             if (capturer.capture) {
-              p = p.then(function (skipCurrentFrame = false) {
-                if (skipCurrentFrame) {
-                  log('Skip screenshot for frame: ' + marker.data.frameCount);
+              p = p.then(function () {
+                if (skipCurrentFrame) {  
                   return;
                 }
 
