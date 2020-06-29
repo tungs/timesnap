@@ -87,8 +87,8 @@ module.exports = function (config) {
 
   const log = function () {
     if (!config.quiet) {
-      if (config.hasOwnProperty('logTransporter') && typeof config.logTransporter === 'function') {
-        config.logTransporter(arguments);
+      if (config.logger) {
+        config.logger(...arguments);
       } else if (config.logToStdErr) {
         // eslint-disable-next-line no-console
         console.error.apply(this, arguments);
