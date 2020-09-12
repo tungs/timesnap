@@ -235,7 +235,7 @@ var pages = [
 
 ### <a name="node-api" href="#node-api">#</a> Node API
 
-The Node API is structured similarly to the command line options, but there are a few options for the Node API that are not accessible through the command line interface: [`config.logToStdErr`](#js-config-log-to-std-err), [`config.frameProcessor`](#js-config-frame-processor), [`config.preparePage`](#js-config-prepare-page), [`config.preparePageForScreenshot`](#js-config-prepare-page-for-screenshot), and certain [`config.viewport`](#js-config-viewport) properties.
+The Node API is structured similarly to the command line options, but there are a few options for the Node API that are not accessible through the command line interface: [`config.logToStdErr`](#js-config-log-to-std-err), [`config.frameProcessor`](#js-config-frame-processor), [`config.preparePage`](#js-config-prepare-page), [`config.preparePageForScreenshot`](#js-config-prepare-page-for-screenshot), [`config.logger`](#js-config-logger), [`config.shouldSkipFrame`](#js-config-should-skip-frame), and certain [`config.viewport`](#js-config-viewport) properties.
 
 **timesnap(config)**
 *  <a name="js-api-config" href="#js-api-config">#</a> `config` &lt;[Object][]&gt;
@@ -276,7 +276,12 @@ The Node API is structured similarly to the command line options, but there are 
     * <a name="js-config-screenshot-quality" href="#js-config-screenshot-quality">#</a> `screenshotQuality` &lt;[number][]&gt; Quality level between 0 to 1 for lossy screenshots. Defaults to 0.92 when in [canvas capture mode](#js-config-canvas-capture-mode) and 0.8 otherwise.
     * <a name="js-config-start-delay" href="#js-config-start-delay">#</a> `startDelay` &lt;[number][]&gt; Waits `config.startDelay` real seconds after loading before starting (default: `0`).
     * <a name="js-config-quiet" href="#js-config-quiet">#</a> `quiet` &lt;[boolean][]&gt; Suppresses console logging.
+    * <a name="js-config-logger" href="#js-config-logger">#</a> `logger` &lt;[function][](...[Object][])&gt; Replaces console logging with a particular function. The passed arguments are the same as those to `console.log` (in this case, usually one string).
     * <a name="js-config-log-to-std-err" href="#js-config-log-to-std-err">#</a> `logToStdErr` &lt;[boolean][]&gt; Logs to stderr instead of stdout. Doesn't do anything if `config.quiet` is set to true.
+    * <a name="js-config-should-skip-frame" href="#js-config-should-skip-frame">#</a> `shouldSkipFrame` &lt;[function][]([Object][])&gt; A function that determines whether a current frame should be skipped for capturing. It is passed the following object:
+        * <a name="js-config-should-skip-frame-frame-count" href="#js-config-should-skip-frame-frame-count">#</a> `frameCount` &lt;[number][]&gt; The current frame count, starting at 1.
+        * <a name="js-config-should-skip-frame-frames-to-capture" href="js-config-should-skip-frame-frames-to-capture">#</a> `framesToCapture` &lt;[number][]&gt; The total number of frames to be captured.
+        * <a name="js-config-should-skip-frame-page" href="#js-config-should-skip-frame-page">#</a> `page` &lt;[Page][]&gt; the puppeteer page.
     * <a name="js-config-frame-processor" href="#js-config-frame-processor">#</a> `frameProcessor` &lt;[function][]([Buffer][], [number][], [number][])&gt; A function that will be called after capturing each frame. If `config.outputDirectory` and `config.outputPattern` aren't specified, enabling this suppresses automatic file output. After capturing each frame, `config.frameProcessor` is called with three arguments, and if it returns a promise, capture will be paused until the promise resolves:
         * `screenshotData` &lt;[Buffer][]&gt; A buffer of the screenshot data.
         * `frameNumber` &lt;[number][]&gt; The current frame number (1 based).
