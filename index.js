@@ -81,7 +81,7 @@ module.exports = function (config) {
 
   if (!frameNumToTime) {
     frameNumToTime = function (frameCount) {
-      return (frameCount-1) * frameDuration;
+      return (frameCount - 1) * frameDuration;
     };
   }
 
