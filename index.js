@@ -267,7 +267,7 @@ module.exports = function (config) {
                   frameCount: marker.data.frameCount,
                   framesToCapture: framesToCapture
                 });
-              })
+              });
             }
 
             if (config.preparePageForScreenshot) {
@@ -289,7 +289,7 @@ module.exports = function (config) {
             }
             if (capturer.capture) {
               p = p.then(function () {
-                if (skipCurrentFrame) {  
+                if (skipCurrentFrame) {
                   return;
                 }
 
