@@ -85,7 +85,9 @@ module.exports = function (config) {
 
   const log = function () {
     if (!config.quiet) {
-      if (config.logToStdErr) {
+      if (config.logger) {
+        config.logger(...arguments);
+      } else if (config.logToStdErr) {
         // eslint-disable-next-line no-console
         console.error.apply(this, arguments);
       } else {
@@ -242,22 +244,49 @@ module.exports = function (config) {
         }, function () {
           var marker = markers[markerIndex];
           var p;
+
           markerIndex++;
           if (marker.type === 'Capture') {
             p = timeHandler.goToTimeAndAnimateForCapture(browserFrames, marker.time);
             // because this section is run often and there is a small performance
             // penalty of using .then(), we'll limit the use of .then()
             // to only if there's something to do
+
+            var skipCurrentFrame;
+
+            if (config.shouldSkipFrame) {
+              p = p.then(function () {
+                skipCurrentFrame = config.shouldSkipFrame({
+                  page: page,
+                  frameCount: marker.data.frameCount,
+                  framesToCapture: framesToCapture
+                });
+              });
+            }
+
             if (config.preparePageForScreenshot) {
               p = p.then(function () {
+                if (skipCurrentFrame) {
+                  log('Skipping frame: ' + marker.data.frameCount);
+                  return;
+                }
+
                 log('Preparing page for screenshot...');
                 return config.preparePageForScreenshot(page, marker.data.frameCount, framesToCapture);
               }).then(function () {
+                if (skipCurrentFrame) {
+                  return;
+                }
+
                 log('Page prepared');
               });
             }
             if (capturer.capture) {
               p = p.then(function () {
+                if (skipCurrentFrame) {
+                  return;
+                }
+
                 return capturer.capture(config, marker.data.frameCount, framesToCapture);
               });
             }
@@ -278,6 +307,7 @@ module.exports = function (config) {
       return browser.close();
     }).catch(function (err) {
       log(err);
+      return Promise.reject(err);
     });
   });
 };
