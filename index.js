@@ -36,8 +36,6 @@ const defaultDuration = 5;
 const defaultFPS = 60;
 const { overwriteRandom } = require('./lib/overwrite-random');
 const { promiseLoop, getBrowserFrames } = require('./lib/utils');
-const initializePageUtils = require('./lib/page-utils');
-const initializeMediaTimeHandler = require('./lib/media-time-handler');
 
 
 module.exports = function (config) {
@@ -164,10 +162,6 @@ module.exports = function (config) {
         return overwriteRandom(page, unrandom, log);
       }).then(function () {
         return timeHandler.overwriteTime(page);
-      }).then(function () {
-        return initializePageUtils(page);
-      }).then(function () {
-        return initializeMediaTimeHandler(page);
       }).then(function () {
         log('Going to ' + url + '...');
         return page.goto(url, { waitUntil: 'networkidle0' });
