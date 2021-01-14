@@ -153,14 +153,25 @@ module.exports = function (config) {
         log('Capture Mode: Screenshot');
       }
       return Promise.resolve().then(function () {
-        if (config.viewport) {
-          if (!config.viewport.width) {
-            config.viewport.width = page.viewport().width;
-          }
-          if (!config.viewport.height) {
-            config.viewport.height = page.viewport().height;
-          }
-          return page.setViewport(config.viewport);
+        var scaleArg = launchOptions.args.find(function (arg){
+          return arg.indexOf('--force-device-scale-factor') > -1;
+        }) || launchOptions.args.find(function (arg){
+          return arg.indexOf('--device-scale-factor') > -1;
+        });
+        var deviceScaleFactor = scaleArg ? Number(scaleArg.split('=')[1]) || 1 : 1;
+
+        if (config.viewport || scaleArg) {
+          var defaultViewPort = {
+            width: page.viewport().width,
+            height: page.viewport().height,
+          };
+
+          config.viewport = Object.assign(
+            defaultViewPort,
+            config.viewport,
+            { deviceScaleFactor }
+          );
+          return page.setViewport(config.viewport);  
         }
       }).then(function () {
         return overwriteRandom(page, unrandom, log);
