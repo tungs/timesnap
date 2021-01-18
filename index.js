@@ -1,7 +1,7 @@
 /**
  * BSD 3-Clause License
  *
- * Copyright (c) 2018-2020, Steve Tung
+ * Copyright (c) 2018-2021, Steve Tung
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@ const path = require('path');
 const defaultDuration = 5;
 const defaultFPS = 60;
 const { overwriteRandom } = require('./lib/overwrite-random');
-const { promiseLoop, getBrowserFrames } = require('./lib/utils');
+const { promiseLoop, getBrowserFrames, stringArrayFind } = require('./lib/utils');
 
 
 module.exports = function (config) {
@@ -151,13 +151,17 @@ module.exports = function (config) {
         log('Capture Mode: Screenshot');
       }
       return Promise.resolve().then(function () {
-        if (config.viewport) {
-          if (!config.viewport.width) {
-            config.viewport.width = page.viewport().width;
-          }
-          if (!config.viewport.height) {
-            config.viewport.height = page.viewport().height;
-          }
+        var scaleArg = stringArrayFind(launchOptions.args, '--force-device-scale-factor') ||
+          stringArrayFind(launchOptions.args, '--device-scale-factor');
+        if (config.viewport || scaleArg) {
+          config.viewport = Object.assign(
+            {
+              width: page.viewport().width,
+              height: page.viewport().height,
+              deviceScaleFactor: scaleArg ? Number(scaleArg.split('=')[1]) || 1 : 1
+            },
+            config.viewport
+          );
           return page.setViewport(config.viewport);
         }
       }).then(function () {
