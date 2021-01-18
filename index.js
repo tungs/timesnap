@@ -164,8 +164,8 @@ module.exports = function (config) {
 
           config.viewport = Object.assign(
             defaultViewPort,
-            config.viewport,
-            { deviceScaleFactor }
+            { deviceScaleFactor },
+            config.viewport
           );
           return page.setViewport(config.viewport);  
         }
