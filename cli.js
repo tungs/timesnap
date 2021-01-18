@@ -47,8 +47,32 @@ commander
   .option('-S, --selector <selector>', 'CSS Selector of item to capture')
   .option('--output-stdout', 'Output images to stdout')
   .option('-V, --viewport <dimensions>', 'Viewport dimensions, in pixels (e.g. 800,600)', function (str) {
-    var dims = str.split(',').map(function (d) { return parseInt(d); });
-    return dims.length > 1 ? { width: dims[0], height: dims[1] } : { width: dims[0] };
+    var viewportComponents = str.split(',');
+    var dims = viewportComponents.filter(c => c.indexOf('=') === -1).map(c => parseInt(c));
+    var parsers = {
+      deviceScaleFactor: JSON.parse,
+      isMobile: JSON.parse,
+      hasTouch: JSON.parse,
+      width: parseInt,
+      height: parseInt,
+      isLandscape: JSON.parse
+    };
+    var viewport = {
+      width: dims[0],
+      height: dims[1]
+    };
+    viewportComponents.filter(c => c.indexOf('=') > -1).forEach(c => {
+      var components = c.split('=');
+      var key = components[0].trim();
+      if (!parsers[key]) {
+        // may want to check for --quiet
+        // eslint-disable-next-line no-console
+        console.error('Unknown viewport configuration key ' + key);
+      } else {
+        viewport[key] = parsers[key](components[1]);
+      }
+    });
+    return viewport;
   })
   .option('--transparent-background', 'Allow transparent backgrounds (for pngs)')
   .option('--round-to-even-width', 'Rounds capture width up to the nearest even number')

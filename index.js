@@ -164,7 +164,7 @@ module.exports = function (config) {
             },
             config.viewport
           );
-          return page.setViewport(config.viewport);  
+          return page.setViewport(config.viewport);
         }
       }).then(function () {
         return overwriteRandom(page, unrandom, log);
