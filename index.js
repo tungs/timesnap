@@ -155,16 +155,13 @@ module.exports = function (config) {
       return Promise.resolve().then(function () {
         var scaleArg = stringArrayFind(launchOptions.args, '--force-device-scale-factor') ||
           stringArrayFind(launchOptions.args, '--device-scale-factor');
-        var deviceScaleFactor = scaleArg ? Number(scaleArg.split('=')[1]) || 1 : 1;
         if (config.viewport || scaleArg) {
-          var defaultViewPort = {
-            width: page.viewport().width,
-            height: page.viewport().height,
-          };
-
           config.viewport = Object.assign(
-            defaultViewPort,
-            { deviceScaleFactor },
+            {
+              width: page.viewport().width,
+              height: page.viewport().height,
+              deviceScaleFactor: scaleArg ? Number(scaleArg.split('=')[1]) || 1 : 1
+            },
             config.viewport
           );
           return page.setViewport(config.viewport);  
