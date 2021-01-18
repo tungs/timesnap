@@ -35,7 +35,7 @@ const path = require('path');
 const defaultDuration = 5;
 const defaultFPS = 60;
 const { overwriteRandom } = require('./lib/overwrite-random');
-const { promiseLoop, getBrowserFrames } = require('./lib/utils');
+const { promiseLoop, getBrowserFrames, stringArrayFind } = require('./lib/utils');
 const initializePageUtils = require('./lib/page-utils');
 const initializeMediaTimeHandler = require('./lib/media-time-handler');
 
@@ -153,25 +153,18 @@ module.exports = function (config) {
         log('Capture Mode: Screenshot');
       }
       return Promise.resolve().then(function () {
-        var scaleArg = launchOptions.args.find(function (arg){
-          return arg.indexOf('--force-device-scale-factor') > -1;
-        }) || launchOptions.args.find(function (arg){
-          return arg.indexOf('--device-scale-factor') > -1;
-        });
-        var deviceScaleFactor = scaleArg ? Number(scaleArg.split('=')[1]) || 1 : 1;
-
+        var scaleArg = stringArrayFind(launchOptions.args, '--force-device-scale-factor') ||
+          stringArrayFind(launchOptions.args, '--device-scale-factor');
         if (config.viewport || scaleArg) {
-          var defaultViewPort = {
-            width: page.viewport().width,
-            height: page.viewport().height,
-          };
-
           config.viewport = Object.assign(
-            defaultViewPort,
-            config.viewport,
-            { deviceScaleFactor }
+            {
+              width: page.viewport().width,
+              height: page.viewport().height,
+              deviceScaleFactor: scaleArg ? Number(scaleArg.split('=')[1]) || 1 : 1
+            },
+            config.viewport
           );
-          return page.setViewport(config.viewport);  
+          return page.setViewport(config.viewport);
         }
       }).then(function () {
         return overwriteRandom(page, unrandom, log);
