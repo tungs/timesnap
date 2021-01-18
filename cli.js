@@ -36,6 +36,7 @@ const commander = require('commander');
 const recorder = require('./index.js');
 const packageInfo = require('./package.json');
 
+var errors = [];
 commander
   .version(packageInfo.version, '-v, --version')
   .usage('<url> [options]')
@@ -65,9 +66,7 @@ commander
       var components = c.split('=');
       var key = components[0].trim();
       if (!parsers[key]) {
-        // may want to check for --quiet
-        // eslint-disable-next-line no-console
-        console.error('Unknown viewport configuration key ' + key);
+        errors.push('Unknown viewport configuration key ' + key);
       } else {
         viewport[key] = parsers[key](components[1]);
       }
@@ -102,6 +101,13 @@ commander
   .parse(process.argv);
 
 commander.url = commander.args[0] || 'index.html';
+
+if (errors.length && !commander.quiet) {
+  errors.forEach(e => {
+    // eslint-disable-next-line no-console
+    console.error(e);
+  });
+}
 
 var processor;
 if (commander.outputStdout) {
