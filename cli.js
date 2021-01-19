@@ -49,7 +49,7 @@ commander
   .option('--output-stdout', 'Output images to stdout')
   .option('-V, --viewport <dimensions>', 'Viewport dimensions, in pixels (e.g. 800,600)', function (str) {
     var viewportComponents = str.split(',');
-    var dims = viewportComponents.filter(c => c.indexOf('=') === -1).map(c => parseInt(c));
+    var dims = viewportComponents.filter(c => !c.includes('=')).map(c => parseInt(c));
     var parsers = {
       deviceScaleFactor: JSON.parse,
       isMobile: JSON.parse,
@@ -62,7 +62,7 @@ commander
       width: dims[0],
       height: dims[1]
     };
-    viewportComponents.filter(c => c.indexOf('=') > -1).forEach(c => {
+    viewportComponents.filter(c => c.includes('=')).forEach(c => {
       var components = c.split('=');
       var key = components[0].trim();
       if (!parsers[key]) {

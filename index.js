@@ -51,7 +51,7 @@ module.exports = function (config) {
   var framesToCapture;
   var outputPath = path.resolve(process.cwd(), (config.outputDirectory || './'));
 
-  if (url.indexOf('://') === -1) {
+  if (!url.includes('://')) {
     // assume it is a file path
     url = 'file://' + path.resolve(process.cwd(), url);
   }
