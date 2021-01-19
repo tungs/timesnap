@@ -1,13 +1,13 @@
 # timesnap
 
-**timesnap** is a Node.js program that records screenshots of web pages that use JavaScript animations. It uses [puppeteer](https://github.com/GoogleChrome/puppeteer) to open a web page, overwrite its time-handling functions, and record snapshots at virtual times. For some web pages, this allows frames to be recorded slower than real time, while appearing smooth and consistent when recreated into a video.
+**timesnap** is a Node.js program that records screenshots of web pages that use JavaScript animations. It uses [timeweb](https://github.com/tungs/timeweb) and [puppeteer](https://github.com/GoogleChrome/puppeteer) to open a web page, overwrite its time-handling functions, and record snapshots at virtual times. For some web pages, this allows frames to be recorded slower than real time, while appearing smooth and consistent when recreated into a video.
 
 You can use **timesnap** from the command line or as a Node.js library. It requires Node v8.9.0 or higher and npm.
 
-To record screenshots and compile them into a video using only one command, see **[timecut](https://github.com/tungs/timecut)**.
+To record screenshots and compile them into a video using only one command, see **[timecut](https://github.com/tungs/timecut)**. For using virtual time in browser, see **[timeweb](https://github.com/tungs/timeweb)**.
 
-## <a name="limitations" href="#limitations">#</a> **timesnap** Limitations
-**timesnap** only overwrites JavaScript functions and video playback, so pages where changes occur via other means (e.g. through transitions/animations from CSS rules) will likely not render as intended.
+## <a name="limitations" href="#limitations">#</a> **timeweb** and **timesnap** Limitations
+**timeweb** (and **timesnap** by extension) only overwrites JavaScript functions and video playback, so pages where changes occur via other means (e.g. through transitions/animations from CSS rules) will likely not render as intended.
 
 ## Read Me Contents
 
