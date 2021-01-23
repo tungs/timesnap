@@ -235,7 +235,7 @@ var pages = [
 
 ### <a name="node-api" href="#node-api">#</a> Node API
 
-The Node API is structured similarly to the command line options, but there are a few options for the Node API that are not accessible through the command line interface: [`config.logToStdErr`](#js-config-log-to-std-err), [`config.frameProcessor`](#js-config-frame-processor), [`config.preparePage`](#js-config-prepare-page), [`config.preparePageForScreenshot`](#js-config-prepare-page-for-screenshot), [`config.logger`](#js-config-logger), and [`config.shouldSkipFrame`](#js-config-should-skip-frame).
+The Node API is structured similarly to the command line options, but there are a few options for the Node API that are not accessible through the command line interface: [`config.logToStdErr`](#js-config-log-to-std-err), [`config.frameProcessor`](#js-config-frame-processor), [`config.navigatePageToURL`](#js-config-navigate-page-to-url), [`config.preparePage`](#js-config-prepare-page), [`config.preparePageForScreenshot`](#js-config-prepare-page-for-screenshot), [`config.logger`](#js-config-logger), and [`config.shouldSkipFrame`](#js-config-should-skip-frame).
 
 **timesnap(config)**
 *  <a name="js-api-config" href="#js-api-config">#</a> `config` &lt;[Object][]&gt;
@@ -286,6 +286,9 @@ The Node API is structured similarly to the command line options, but there are 
         * `screenshotData` &lt;[Buffer][]&gt; A buffer of the screenshot data.
         * `frameNumber` &lt;[number][]&gt; The current frame number (1 based).
         * `totalFrames` &lt;[number][]&gt; The total number of frames.
+    * <a name="js-config-navigate-page-to-url" href="#js-config-navigate-page-to-url">#</a> `navigatePageToURL` &lt;[function][]([Object][])&gt; A function that navigates a puppeteer page to a URL, overriding the default navigation to a URL, that should return a promise that resolves once the page is finished navigating. The function is passed the following object:
+        * <a name="js-config-navigate-page-to-url-page" href="#js-config-navigate-page-to-url-page"> `page` &lt;[Page][]&gt; the puppeteer page
+        * <a name="js-config-navigate-page-to-url-url" href="#js-config-navigate-page-to-url-url"> `url` &lt;[string][]&gt; the url to navigate to
     * <a name="js-config-prepare-page" href="#js-config-prepare-page">#</a> `preparePage` &lt;[function][]([Page][])&gt; A setup function that will be called one time before taking screenshots. If it returns a promise, capture will be paused until the promise resolves.
         * `page` &lt;[Page][]&gt; The puppeteer instance of the page being captured.
     * <a name="js-config-prepare-page-for-screenshot" href="#js-config-prepare-page-for-screenshot">#</a> `preparePageForScreenshot` &lt;[function][]([Page][], [number][], [number][])&gt; A setup function that will be called before each screenshot. If it returns a promise, capture will be paused until the promise resolves.

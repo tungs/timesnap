@@ -169,8 +169,12 @@ module.exports = function (config) {
       }).then(function () {
         return timeHandler.overwriteTime(page);
       }).then(function () {
-        log('Going to ' + url + '...');
-        return page.goto(url, { waitUntil: 'networkidle0' });
+        if (typeof config.navigatePageToURL === 'function') {
+          return config.navigatePageToURL({ page, url, log });
+        } else {
+          log('Going to ' + url + '...');
+          return page.goto(url, { waitUntil: 'networkidle0' });
+        }
       }).then(function () {
         log('Page loaded');
         if ('preparePage' in config) {
