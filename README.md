@@ -22,18 +22,23 @@ To record screenshots and compile them into a video, see **[timecut](https://git
 
 
 ## <a name="from-node" href="#from-node">#</a> From Node.js
-**timesnap** can also be included as a library inside Node.js programs.
 
 ### <a name="node-install" href="#node-install">#</a> Node Install
 ```
-npm install timesnap --save
+npm install timesnap-core --save
 ```
 
 ### <a name="node-examples" href="#node-examples">#</a> Node Examples
 
+For these examples, we'll use puppeteer version 2.1.1, which doesn't require additional libraries to be installed.
+
+```
+npm install puppeteer@2.1.1
+```
+
 **<a name="node-example-basic" href="#node-example-basic">#</a> Basic Use:**
 
-Install `timesnap-core` and `puppeteer` beforehand. Specify a [`config.launcher`](#js-config-launcher) function that creates a browser instance with certain launch options.
+Specify a [`config.launcher`](#js-config-launcher) function that creates a browser instance with certain launch options.
 
 ```node
 const timesnap = require('timesnap-core');
