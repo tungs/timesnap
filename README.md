@@ -4,7 +4,7 @@
 
 # timesnap-core
 
-**timesnap-core** is an npm package that does not automatically bundle puppeteer. It differs from `timesnap` by requiring a `config.launcher` function or a `config.browser` object to be passed, and does not have a command line interface. It's stored on a branch of `timesnap` and derived from its code. All pull requests should be based on the main branch of `timesnap` instead of this branch, unless in the rare event that it's particular to this branch.
+**timesnap-core** is an npm package that does not automatically bundle puppeteer. It differs from `timesnap` by requiring a `config.launcher` function or a `config.browser` object to be passed, and does not have a command line interface. It's stored on the [`core`](https://github.com/tungs/timesnap/tree/core) branch of `timesnap` and derived from its code. All pull requests should be based on the main branch of `timesnap` instead of this branch, unless in the rare event that it's particular to this branch.
 
 To record screenshots and compile them into a video, see **[timecut](https://github.com/tungs/timecut)** and **[timecut-core](https://github.com/tungs/timecut/tree/core)**.
 
@@ -32,8 +32,11 @@ npm install timesnap --save
 ### <a name="node-examples" href="#node-examples">#</a> Node Examples
 
 **<a name="node-example-basic" href="#node-example-basic">#</a> Basic Use:**
+
+Install `timesnap-core` and `puppeteer` beforehand. Specify a [`config.launcher`](#js-config-launcher) function that creates a browser instance with certain launch options.
+
 ```node
-const timesnap = require('timesnap');
+const timesnap = require('timesnap-core');
 const puppeteer = require('puppeteer');
 timesnap({
   launcher: launchOptions => puppeteer.launch(launchOptions),
@@ -54,31 +57,20 @@ timesnap({
 });
 ```
 
-**<a name="node-example-multiple" href="#node-example-multiple">#</a> Multiple pages:**
+**<a name="node-example-browser" href="#node-example-browser">#</a> Using `config.browser`:**
+
+You can also use [`config.browser`](#js-config-browser), though it might ignore / disable some launch options like [`config.quiet`](#js-config-quiet), [`config.logToStdErr`](#js-config-log-to-std-err), [`config.headless`](#js-config-headless), [`config.executablePath`](#js-config-executable-path), and [`config.launchArguments`](#js-config-launch-arguments). You can specify custom launch arguments through `puppeteer.launch()`.
+
 ```node
-const timesnap = require('timesnap');
-var pages = [
-  {
-    url: 'https://tungs.github.io/truchet-tiles-original/#autoplay=true',
-    outputDirectory: 'truchet-tiles'
-  }, {
-    url: 'https://breathejs.org/examples/Drawing-US-Counties.html',
-    outputDirectory: 'counties'
-  }
-];
-(async () => {
-  for (let page of pages) {
-    await timesnap({
-      url: page.url,
-      outputDirectory: page.outputDirectory,
-      viewport: {
-        width: 800,
-        height: 600
-      },
-      duration: 20
-    });
-  }
-})();
+const timesnap = require('timesnap-core');
+const puppeteer = require('puppeteer');
+timesnap({
+  browser: puppeteer.launch({ dumpio: true }), // can add custom launch options here
+  url: 'https://tungs.github.io/truchet-tiles-original/#autoplay=true&switchStyle=random',
+  outputDirectory: 'frames'
+}).then(function () {
+  console.log('Done!');
+});
 ```
 
 ### <a name="node-api" href="#node-api">#</a> Node API
@@ -86,7 +78,7 @@ var pages = [
 **timesnap(config)**
 *  <a name="js-api-config" href="#js-api-config">#</a> `config` &lt;[Object][]&gt;
     * <a name="js-config-launcher" href="#js-config-launcher">#</a> `launcher` &lt;[function][]([Object][])&gt; A function that returns or resolves a puppeteer or puppeteer-like browser. It is passed a [launch options argument](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#puppeteerlaunchoptions), which should be passed to `puppeteer.launch`, if possible.
-    * <a name="js-config-browser" href="#js-config-browser">#</a> `browser` &lt;[Object][]&gt; The instance of a puppeteer or puppeteer-like browser. Note that certain configuration options might not work as intended or might be ignored, like `config.quiet`, `config.logToStdErr`, `config.headless`, `config.executablePath`, and `config.launchArguments`.
+    * <a name="js-config-browser" href="#js-config-browser">#</a> `browser` &lt;[Object][]&gt; The instance of a puppeteer or puppeteer-like browser. Note that certain configuration options might not work as intended or might be ignored, like [`config.quiet`](#js-config-quiet), [`config.logToStdErr`](#js-config-log-to-std-err), [`config.headless`](#js-config-headless), [`config.executablePath`](#js-config-executable-path), and [`config.launchArguments`](#js-config-launch-arguments).
     * <a name="js-config-url" href="#js-config-url">#</a> `url` &lt;[string][]&gt; The url to load. It can be a web url, like `https://github.com` or a file path, with relative paths resolving in the current working directory (default: `index.html`).
     * <a name="js-config-output-directory" href="#js-config-output-directory">#</a> `outputDirectory` &lt;[string][]&gt; Saves images to a directory. Makes one if necessary.
     * <a name="js-config-output-pattern" href="#js-config-output-pattern">#</a> `outputPattern` &lt;[string][]&gt; Sets each file name according to a printf-style pattern (e.g. `image-%03d.png`)
