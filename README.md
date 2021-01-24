@@ -4,9 +4,9 @@
 
 # timesnap-core
 
-**timesnap-core** is a version of timesnap that does not automatically bundle puppeteer. It differs from `timesnap` by requiring a [`config.launcher`](#js-config-launcher) function or a [`config.browser`](#js-config-browser) object to be passed, and does not have a command line interface. It's stored on the [`core`](https://github.com/tungs/timesnap/tree/core) branch of `timesnap` and derived from its code. All pull requests should be based on the main branch of `timesnap` instead of this branch, unless in the rare event that it's particular only to this branch.
+**timesnap-core** is a version of timesnap that does not automatically bundle puppeteer. It differs from `timesnap` by requiring a [`config.launcher`](#js-config-launcher) function or a [`config.browser`](#js-config-browser) object to be passed, and does not have a command line interface. It's stored on the [`core`](https://github.com/tungs/timesnap/tree/core#timesnap-core) branch of `timesnap` and derived from its code. All pull requests should be based on the main branch of `timesnap` instead of this branch, unless in the rare event that it's particular only to this branch.
 
-To record screenshots and compile them into a video, see **[timecut](https://github.com/tungs/timecut)** and **[timecut-core](https://github.com/tungs/timecut/tree/core)**.
+To record screenshots and compile them into a video, see **[timecut](https://github.com/tungs/timecut)** and **[timecut-core](https://github.com/tungs/timecut/tree/core#timecut-core)**.
 
 ## <a name="limitations" href="#limitations">#</a> **timesnap** Limitations
 **timesnap** only overwrites JavaScript functions and video playback, so pages where changes occur via other means (e.g. through transitions/animations from CSS rules) will likely not render as intended.
