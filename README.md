@@ -2,21 +2,17 @@
 
 **timesnap** is a Node.js program that records screenshots of web pages that use JavaScript animations. It uses [puppeteer](https://github.com/GoogleChrome/puppeteer) to open a web page, overwrite its time-handling functions, and record snapshots at virtual times. For some web pages, this allows frames to be recorded slower than real time, while appearing smooth and consistent when recreated into a video.
 
-You can use **timesnap** from the command line or as a Node.js library. It requires Node v8.9.0 or higher and npm.
+# timesnap-core
 
-To record screenshots and compile them into a video using only one command, see **[timecut](https://github.com/tungs/timecut)**.
+**timesnap-core** is a version of timesnap that does not automatically bundle puppeteer. It differs from `timesnap` by requiring a [`config.launcher`](#js-config-launcher) function or a [`config.browser`](#js-config-browser) object to be passed, and does not have a command line interface. It's stored on the [`core`](https://github.com/tungs/timesnap/tree/core#timesnap-core) branch of `timesnap` and derived from its code. All pull requests should be based on the main branch of `timesnap` instead of this branch, unless in the rare event that it's particular only to this branch.
+
+To record screenshots and compile them into a video, see **[timecut](https://github.com/tungs/timecut)** and **[timecut-core](https://github.com/tungs/timecut/tree/core#timecut-core)**.
 
 ## <a name="limitations" href="#limitations">#</a> **timesnap** Limitations
 **timesnap** only overwrites JavaScript functions and video playback, so pages where changes occur via other means (e.g. through transitions/animations from CSS rules) will likely not render as intended.
 
 ## Read Me Contents
 
-* [From the Command Line](#from-cli)
-  * [Global Install and Use](#cli-global-install)
-  * [Local Install and Use](#cli-local-install)
-  * [Command Line *url*](#cli-url-use)
-  * [Command Line Examples](#cli-examples)
-  * [Command Line *options*](#cli-options)
 * [From Node.js](#from-node)
   * [Node Install](#node-install)
   * [Node Examples](#node-examples)
@@ -24,171 +20,31 @@ To record screenshots and compile them into a video using only one command, see 
 * [timesnap Modes](#modes)
 * [How it works](#how-it-works)
 
-## <a name="from-cli" href="#from-cli">#</a> From the Command Line
-
-### <a name="cli-global-install" href="#cli-global-install">#</a> Global Install and Use
-To install:
-
-Due to [an issue in puppeteer](https://github.com/GoogleChrome/puppeteer/issues/375) with permissions, timesnap is not supported for global installation for root. You can configure `npm` to install global packages for a specific user by following this guide: https://docs.npmjs.com/getting-started/fixing-npm-permissions#option-two-change-npms-default-directory
-
-After configuring, run:
-```
-npm install -g timesnap
-```
-
-To use:
-```
-timesnap "url" [options]
-```
-
-### <a name="cli-local-install" href="#cli-local-install">#</a> Local Install and Use
-To install:
-```
-cd /path/to/installation/directory
-npm install timesnap
-```
-
-To use:
-```
-node /path/to/installation/directory/node_modules/timesnap/cli.js "url" [options]
-```
-
-*Alternatively*:
-
-To install:
-```
-cd /path/to/installation/directory
-git clone https://github.com/tungs/timesnap.git
-cd timesnap
-npm install
-```
-
-To use:
-```
-node /path/to/installation/directory/timesnap/cli.js "url" [options]
-```
-
-### <a name="cli-url-use" href="#cli-url-use">#</a> Command Line *url*
-The url can be a web url (e.g. `https://github.com`) or a file path, with relative paths resolving in the current working directory. If no url is specified, defaults to `index.html`. Remember to enclose urls that contain special characters (like `#` and `&`) with quotes.
-
-### <a name="cli-examples" href="#cli-examples">#</a> Command Line Examples
-
-**<a name="cli-example-default" href="#cli-example-default">#</a> Default behavior**:
-```
-timesnap
-```
-Opens `index.html` in the current working directory, sets the viewport to 800x600, captures at 60 frames per second for 5 virtual seconds, and saves the frames to `001.png` to `300.png` in the current working directory. The defaults may change in the future, so for long-term scripting, it's a good idea to explicitly pass these options, like in the following example.
-
-**<a name="cli-example-viewport-fps-duration-output" href="#cli-example-viewport-fps-duration-output">#</a> Setting viewport size, frames per second, duration, and output pattern**:
-```
-timesnap index.html --viewport=800,600 --fps=60 --duration=5 --output-pattern="%03d.png"
-```
-Equivalent to the current default `timesnap` invocation, but with explicit options. Opens `index.html` in the current working directory, sets the viewport to 800x600, captures at 60 frames per second for 5 virtual seconds, and saves the frames to `001.png` to `300.png` in the current working directory.
-
-**<a name="cli-example-selector" href="#cli-example-selector">#</a> Using a selector**:
-```
-timesnap drawing.html -S "canvas,svg" --output-pattern="frames/%03d.png"
-```
-Opens `drawing.html` in the current working directory, crops each frame to the bounding box of the first canvas or svg element, and captures frames using default settings (5 seconds @ 60fps), saving to `frames/001.png`... `frames/300.png` in the current working directory, making the directory `frames` if needed.
-
-**<a name="cli-example-offsets" href="#cli-example-offsets">#</a> Using offsets**:
-```
-timesnap "https://tungs.github.io/truchet-tiles-original/#autoplay=true&switchStyle=random" \ 
-  -S "#container" \ 
-  --left=20 --top=40 --right=6 --bottom=30 \
-  --duration=20 --output-directory=frames
-```
-Opens https://tungs.github.io/truchet-tiles-original/#autoplay=true&switchStyle=random (note the quotes in the url are necessary because of the `#` and `&`). Crops each frame to the `#container` element, with an additional crop of 20px, 40px, 6px, and 30px for the left, top, right, and bottom, respectively. Captures frames for 20 virtual seconds at 60fps to `frames/0001.png`... `frames/1200.png` in the current working directory, making the directory `frames` if needed.
-
-**<a name="cli-example-piping" href="#cli-example-piping">#</a> Piping**:
-```
-timesnap https://breathejs.org/examples/Drawing-US-Counties.html \
-  -V 1920,1080 -S "#draw-canvas" --fps=60 --duration=10 \
-  --round-to-even-width --round-to-even-height \
-  --output-stdout | ffmpeg -framerate 60 -i pipe:0 -y -pix_fmt yuv420p video.mp4
-```
-Opens https://breathejs.org/examples/Drawing-US-Counties.html, sets the viewport size to 1920x1080, crops each frame to the bounding box of `#draw-canvas`, records at 60 frames per second for ten virtual seconds, and pipes the output to `ffmpeg`, which reads in the data from stdin, encodes the frames using pixel format `yuv420p`, and saves the result as `video.mp4` in the current working directory. It does not save individual frames to disk. It uses the `--round-to-even-width` and `--round-to-even-height` options to ensure the dimensions of the frames are even numbers, which ffmpeg requires for certain encodings.
-
-### <a name="cli-options" href="#cli-options">#</a> Command Line *options*
-* <a name="cli-options-output-directory" href="#cli-options-output-directory">#</a> Output Directory: `-o`, `--output-directory` *directory*
-    * Saves images to a *directory* (default `./`).
-* <a name="cli-options-output-pattern" href="#cli-options-output-pattern">#</a> Output Pattern: `-O`, `--output-pattern` *pattern*
-    * Sets each file name according to a printf-style *pattern* (e.g. `image-%03d.png`).
-* <a name="cli-options-fps" href="#cli-options-fps">#</a> Frame Rate: `-R`, `--fps` *frame rate*
-    * Frame rate (in frames per virtual second) of capture (default: `60`).
-* <a name="cli-options-duration" href="#cli-options-duration">#</a> Duration: `-d`, `--duration` *seconds*
-    * Duration of capture, in *seconds* (default: `5`).
-* <a name="cli-options-frames" href="#cli-options-frames">#</a> Frames: `--frames` *count*
-    * Number of frames to capture.
-* <a name="cli-options-selector" href="#cli-options-selector">#</a> Selector: `-S`, `--selector` "*selector*"
-    * Crops each frame to the bounding box of the first item found by the [CSS *selector*][CSS selector].
-* <a name="cli-options-viewport" href="#cli-options-viewport">#</a> Viewport: `-V`, `--viewport` *dimensions*
-    * Viewport dimensions, in pixels. For example, `800` (for width) or `800,600` (for width and height).
-* <a name="cli-options-canvas-capture-mode" href="#cli-options-canvas-capture-mode">#</a> Canvas Capture Mode: `--canvas-capture-mode` *\[format\]*
-    * Experimental. Captures images from canvas data instead of screenshots. See [canvas capture mode](#canvas-capture-mode). Can provide an optional image format (e.g. `png`), otherwise it uses the saved image's extension, or defaults to `png` if the format is not specified or supported. Can prefix the format with `immediate:` (e.g. `immediate:png`) to immediately capture pixel data after rendering, which is sometimes needed for some WebGL renderers. Specify the canvas [using the `--selector` option](#cli-options-selector), otherwise it defaults to the first canvas in the document.
-* <a name="cli-options-start" href="#cli-options-start">#</a> Start: `-s`, `--start` *n seconds*
-    * Runs code for n virtual seconds before saving any frames (default: `0`).
-* <a name="cli-options-x-offset" href="#cli-options-x-offset">#</a> X Offset: `-x`, `--x-offset` *pixels*
-    * X offset of capture, in pixels (default: `0`).
-* <a name="cli-options-y-offset" href="#cli-options-y-offset">#</a> Y Offset: `-y`, `--y-offset` *pixels*
-    * Y offset of capture, in pixels (default: `0`).
-* <a name="cli-options-width" href="#cli-options-width">#</a> Width: `-W`, `--width` *pixels*
-    * Width of capture, in pixels.
-* <a name="cli-options-height" href="#cli-options-height">#</a> Height: `-H`, `--height` *pixels*
-    * Height of capture, in pixels.
-* <a name="cli-options-round-to-even-width" href="#cli-options-round-to-even-width">#</a> Round to Even Width: `--round-to-even-width`
-    * Rounds width up to the nearest even number.
-* <a name="cli-options-round-to-even-height" href="#cli-options-round-to-even-height">#</a> Round to Even Height: `--round-to-even-height`
-    * Rounds height up to the nearest even number.
-* <a name="cli-options-transparent-background" href="#cli-options-transparent-background">#</a> Transparent Background: `--transparent-background`
-    * Allows background to be transparent if there is no background styling.
-* <a name="cli-options-left" href="#cli-options-left">#</a> Left: `-l`, `--left` *pixels*
-    * Left edge of capture, in pixels. Equivalent to `--x-offset`.
-* <a name="cli-options-right" href="#cli-options-right">#</a> Right: `-r`, `--right` *pixels*
-    * Right edge of capture, in pixels. Ignored if `width` is specified.
-* <a name="cli-options-top" href="#cli-options-top">#</a> Top: `-t`, `--top` *pixels*
-    * Top edge of capture, in pixels. Equivalent to `--y-offset`.
-* <a name="cli-options-bottom" href="#cli-options-bottom">#</a> Bottom: `-b`, `--bottom` *pixels*
-    * Bottom edge of capture, in pixels. Ignored if `height` is specified.
-* <a name="cli-options-unrandomize" href="#cli-options-unrandomize">#</a> Unrandomize: `-u`, `--unrandomize` *\[seeds\]*
-    * Overwrites `Math.random` with a seeded pseudorandom number generator. Can provide optional seeds as up to four comma separated integers (e.g. `--unrandomize 2,3,5,7` or `--unrandomize 42`). If `seeds` is `random-seed` (i.e. `--unrandomize random-seed`), a random seed will be generated, displayed (if not in quiet mode), and used. If `seeds` is not provided, it uses the seeds `10,0,20,0`.
-* <a name="cli-options-executable-path" href="#cli-options-executable-path">#</a> Executable Path: `--executable-path` *path*
-    * Uses the Chromium/Chrome instance at *path* for puppeteer.
-* <a name="cli-options-remote-url" href="#cli-options-remote-url">#</a> Remote URL: `--remote-url` *path*
-    * URL of remote Chromium/Chrome instance to connect using *puppeteer.connect()*.
-* <a name="cli-options-launch-arguments" href="#cli-options-launch-arguments">#</a> Puppeteer Launch Arguments: `-L`, `--launch-arguments` *arguments*
-    * Arguments to pass to Puppeteer/Chromium, enclosed in quotes. Example: `--launch-arguments="--single-process"`. A list of arguments can be found [here](https://peter.sh/experiments/chromium-command-line-switches).
-* <a name="cli-options-no-headless" href="#cli-options-no-headless">#</a> No Headless: `--no-headless`
-    * Runs Chromium/Chrome in windowed mode.
-* <a name="cli-options-screenshot-type" href="#cli-options-screenshot-type">#</a> Screenshot Type: `--screenshot-type` *type*
-    * Output image format for the screenshots. By default, the file extension is used to infer type, and failing that, `png` is used. `jpeg` is also available.
-* <a name="cli-options-screenshot-quality" href="#cli-options-screenshot-quality">#</a> Screenshot Quality: `--screenshot-quality` *number*
-    * Quality level between 0 to 1 for lossy screenshots. Defaults to 0.92 when in [canvas capture mode](#cli-options-canvas-capture-mode) and 0.8 otherwise.
-* <a name="cli-options-start-delay" href="#cli-options-start-delay">#</a> Start Delay: `--start-delay` *n seconds*
-    * Waits *n real seconds* after loading the page before starting the virtual timeline.
-* <a name="cli-options-quiet" href="#cli-options-quiet">#</a> Quiet: `-q`, `--quiet`
-    * Suppresses console logging.
-* <a name="cli-options-output-stdout" href="#cli-options-output-stdout">#</a> Output stdout: `--output-stdout`
-    * Outputs images to stdout. Useful for piping.
-* <a name="cli-options-version" href="#cli-options-version">#</a> Version: `-v`, `--version`
-    * Displays version information. Immediately exits.
-* <a name="cli-options-help" href="#cli-options-help">#</a> Help: `-h`, `--help`
-    * Displays command line options. Immediately exits.
 
 ## <a name="from-node" href="#from-node">#</a> From Node.js
-**timesnap** can also be included as a library inside Node.js programs.
 
 ### <a name="node-install" href="#node-install">#</a> Node Install
 ```
-npm install timesnap --save
+npm install timesnap-core --save
 ```
 
 ### <a name="node-examples" href="#node-examples">#</a> Node Examples
 
+For these examples, we'll use puppeteer version 2.1.1, which doesn't require additional libraries to be installed.
+
+```
+npm install puppeteer@2.1.1 --save
+```
+
 **<a name="node-example-basic" href="#node-example-basic">#</a> Basic Use:**
+
+Specify a [`config.launcher`](#js-config-launcher) function that creates a browser instance with certain launch options.
+
 ```node
-const timesnap = require('timesnap');
+const timesnap = require('timesnap-core');
+const puppeteer = require('puppeteer');
 timesnap({
+  launcher: launchOptions => puppeteer.launch(launchOptions),
   url: 'https://tungs.github.io/truchet-tiles-original/#autoplay=true&switchStyle=random',
   viewport: {
     width: 800,               // sets the viewport (window size) to 800x600
@@ -206,39 +62,28 @@ timesnap({
 });
 ```
 
-**<a name="node-example-multiple" href="#node-example-multiple">#</a> Multiple pages:**
+**<a name="node-example-browser" href="#node-example-browser">#</a> Using `config.browser`:**
+
+You can also use [`config.browser`](#js-config-browser), though it might ignore / disable some launch options like [`config.quiet`](#js-config-quiet), [`config.logToStdErr`](#js-config-log-to-std-err), [`config.headless`](#js-config-headless), [`config.executablePath`](#js-config-executable-path), and [`config.launchArguments`](#js-config-launch-arguments). You can specify custom launch arguments through `puppeteer.launch()`.
+
 ```node
-const timesnap = require('timesnap');
-var pages = [
-  {
-    url: 'https://tungs.github.io/truchet-tiles-original/#autoplay=true',
-    outputDirectory: 'truchet-tiles'
-  }, {
-    url: 'https://breathejs.org/examples/Drawing-US-Counties.html',
-    outputDirectory: 'counties'
-  }
-];
-(async () => {
-  for (let page of pages) {
-    await timesnap({
-      url: page.url,
-      outputDirectory: page.outputDirectory,
-      viewport: {
-        width: 800,
-        height: 600
-      },
-      duration: 20
-    });
-  }
-})();
+const timesnap = require('timesnap-core');
+const puppeteer = require('puppeteer');
+timesnap({
+  browser: puppeteer.launch({ dumpio: true }), // can add custom launch options here
+  url: 'https://tungs.github.io/truchet-tiles-original/#autoplay=true&switchStyle=random',
+  outputDirectory: 'frames'
+}).then(function () {
+  console.log('Done!');
+});
 ```
 
 ### <a name="node-api" href="#node-api">#</a> Node API
 
-The Node API is structured similarly to the command line options, but there are a few options for the Node API that are not accessible through the command line interface: [`config.logToStdErr`](#js-config-log-to-std-err), [`config.frameProcessor`](#js-config-frame-processor), [`config.preparePage`](#js-config-prepare-page), [`config.preparePageForScreenshot`](#js-config-prepare-page-for-screenshot), [`config.logger`](#js-config-logger), [`config.shouldSkipFrame`](#js-config-should-skip-frame), and certain [`config.viewport`](#js-config-viewport) properties.
-
 **timesnap(config)**
 *  <a name="js-api-config" href="#js-api-config">#</a> `config` &lt;[Object][]&gt;
+    * <a name="js-config-launcher" href="#js-config-launcher">#</a> `launcher` &lt;[function][]([Object][])&gt; A function that returns or resolves a puppeteer or puppeteer-like browser. It is passed a [launch options argument](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#puppeteerlaunchoptions), which should be passed to `puppeteer.launch`, if possible.
+    * <a name="js-config-browser" href="#js-config-browser">#</a> `browser` &lt;[Object][]&gt; The instance of a puppeteer or puppeteer-like browser. Note that certain configuration options might not work as intended or might be ignored, like [`config.quiet`](#js-config-quiet), [`config.logToStdErr`](#js-config-log-to-std-err), [`config.headless`](#js-config-headless), [`config.executablePath`](#js-config-executable-path), and [`config.launchArguments`](#js-config-launch-arguments).
     * <a name="js-config-url" href="#js-config-url">#</a> `url` &lt;[string][]&gt; The url to load. It can be a web url, like `https://github.com` or a file path, with relative paths resolving in the current working directory (default: `index.html`).
     * <a name="js-config-output-directory" href="#js-config-output-directory">#</a> `outputDirectory` &lt;[string][]&gt; Saves images to a directory. Makes one if necessary.
     * <a name="js-config-output-pattern" href="#js-config-output-pattern">#</a> `outputPattern` &lt;[string][]&gt; Sets each file name according to a printf-style pattern (e.g. `image-%03d.png`)

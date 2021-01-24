@@ -1,7 +1,7 @@
 /**
  * BSD 3-Clause License
  *
- * Copyright (c) 2018-2020, Steve Tung
+ * Copyright (c) 2018-2021, Steve Tung
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-const puppeteer = require('puppeteer');
 const path = require('path');
 const defaultDuration = 5;
 const defaultFPS = 60;
@@ -111,12 +110,8 @@ module.exports = function (config) {
       return Promise.resolve(config.browser);
     } else if (config.launcher) {
       return Promise.resolve(config.launcher(launchOptions));
-    } else if (config.remoteUrl) {
-      let queryString = Object.keys(launchOptions).map(key => key + '=' + launchOptions[key]).join('&');
-      let remote = config.remoteUrl + '?' + queryString;
-      return puppeteer.connect({ browserWSEndpoint: remote });
     } else {
-      return puppeteer.launch(launchOptions);
+      return Promise.reject('timesnap-core requires config.browser or config.launcher to be set!');
     }
   };
 

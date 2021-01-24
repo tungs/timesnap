@@ -1,10 +1,10 @@
 {
-  "name": "timesnap",
+  "name": "timesnap-core",
   "version": "0.1.4",
   "description": "Take screenshots of web pages at smooth intervals",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tungs/timesnap.git"
+    "url": "https://github.com/tungs/timesnap/tree/core"
   },
   "author": {
     "name": "Steve Tung"
@@ -16,13 +16,8 @@
   "scripts": {
     "lint": "eslint *.js './lib/**/*.js'"
   },
-  "bin": {
-    "timesnap": "./cli.js"
-  },
   "license": "BSD-3-Clause",
   "dependencies": {
-    "commander": "^2.11.0",
-    "puppeteer": "^2.1.1",
     "sprintf-js": "1.1.1"
   },
   "devDependencies": {
