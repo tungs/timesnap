@@ -4,7 +4,7 @@
 
 # timesnap-core
 
-**timesnap-core** is an npm package that does not automatically bundle puppeteer. It differs from `timesnap` by requiring a [`config.launcher`](#js-config-launcher) function or a [`config.browser`](#js-config-browser) object to be passed, and does not have a command line interface. It's stored on the [`core`](https://github.com/tungs/timesnap/tree/core) branch of `timesnap` and derived from its code. All pull requests should be based on the main branch of `timesnap` instead of this branch, unless in the rare event that it's particular to this branch.
+**timesnap-core** is a version of timesnap that does not automatically bundle puppeteer. It differs from `timesnap` by requiring a [`config.launcher`](#js-config-launcher) function or a [`config.browser`](#js-config-browser) object to be passed, and does not have a command line interface. It's stored on the [`core`](https://github.com/tungs/timesnap/tree/core) branch of `timesnap` and derived from its code. All pull requests should be based on the main branch of `timesnap` instead of this branch, unless in the rare event that it's particular only to this branch.
 
 To record screenshots and compile them into a video, see **[timecut](https://github.com/tungs/timecut)** and **[timecut-core](https://github.com/tungs/timecut/tree/core)**.
 
@@ -33,7 +33,7 @@ npm install timesnap-core --save
 For these examples, we'll use puppeteer version 2.1.1, which doesn't require additional libraries to be installed.
 
 ```
-npm install puppeteer@2.1.1
+npm install puppeteer@2.1.1 --save
 ```
 
 **<a name="node-example-basic" href="#node-example-basic">#</a> Basic Use:**
