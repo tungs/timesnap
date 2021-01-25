@@ -1,6 +1,6 @@
 # timesnap
 
-**timesnap** is a Node.js program that records screenshots of web pages that use JavaScript animations. It uses [puppeteer](https://github.com/GoogleChrome/puppeteer) to open a web page, overwrite its time-handling functions, and record snapshots at virtual times. For some web pages, this allows frames to be recorded slower than real time, while appearing smooth and consistent when recreated into a video.
+**timesnap** is a Node.js program that records screenshots of web pages that use JavaScript animations. It uses **[timeweb](https://github.com/tungs/timeweb)** and [puppeteer](https://github.com/GoogleChrome/puppeteer) to open a web page, overwrite its time-handling functions, and record snapshots at virtual times. For some web pages, this allows frames to be recorded slower than real time, while appearing smooth and consistent when recreated into a video.
 
 It requires Node v8.9.0 or higher and npm.
 
@@ -8,10 +8,10 @@ It requires Node v8.9.0 or higher and npm.
 
 **timesnap-core** is a version of timesnap that does not automatically bundle puppeteer. It differs from `timesnap` by requiring a [`config.launcher`](#js-config-launcher) function or a [`config.browser`](#js-config-browser) object to be passed, and does not have a command line interface. It's stored on the [`core`](https://github.com/tungs/timesnap/tree/core#timesnap-core) branch of `timesnap` and derived from its code. All pull requests should be based on the main branch of `timesnap` instead of this branch, unless in the rare event that it's particular only to this branch.
 
-To record screenshots and compile them into a video, see **[timecut](https://github.com/tungs/timecut)** and **[timecut-core](https://github.com/tungs/timecut/tree/core#timecut-core)**.
+To record screenshots and compile them into a video, see **[timecut](https://github.com/tungs/timecut)** and **[timecut-core](https://github.com/tungs/timecut/tree/core#timecut-core)**. For using virtual time in browser, see **[timeweb](https://github.com/tungs/timeweb)**.
 
-## <a name="limitations" href="#limitations">#</a> **timesnap** Limitations
-**timesnap** only overwrites JavaScript functions and video playback, so pages where changes occur via other means (e.g. through transitions/animations from CSS rules) will likely not render as intended.
+## <a name="limitations" href="#limitations">#</a> **timeweb** and **timesnap** Limitations
+**timeweb** (and **timesnap** by extension) only overwrites JavaScript functions and video playback, so pages where changes occur via other means (e.g. through transitions/animations from CSS rules) will likely not render as intended.
 
 ## Read Me Contents
 
@@ -96,7 +96,7 @@ timesnap({
     * <a name="js-config-viewport" href="#js-config-viewport">#</a> `viewport` &lt;[Object][]&gt;
         * <a name="js-config-viewport-width" href="#js-config-viewport-width">#</a> `width` &lt;[number][]&gt; Width of viewport, in pixels (default: `800`).
         * <a name="js-config-viewport-height" href="#js-config-viewport-height">#</a> `height` &lt;[number][]&gt; Height of viewport, in pixels (default: `600`).
-        * <a name="js-config-viewport-scale-factor" href="#js-config-viewport-scale-factor">#</a> `deviceScaleFactor` &lt;[number][]&gt; Device scale factor (default: `1`).
+        * <a name="js-config-viewport-scale-factor" href="#js-config-viewport-scale-factor">#</a> `deviceScaleFactor` &lt;[number][]&gt; Device scale factor (default: `1`). Note that the captured image resolution is multiplied by the device scale factor.
         * <a name="js-config-viewport-mobile" href="#js-config-viewport-mobile">#</a> `isMobile` &lt;[boolean][]&gt; Specifies whether the `meta viewport` tag should be used (default: `false`).
         * <a name="js-config-viewport-touch" href="#js-config-viewport-touch">#</a> `hasTouch` &lt;[boolean][]&gt; Specifies whether the viewport supports touch (default: `false`).
         * <a name="js-config-viewport-landscape" href="#js-config-viewport-landscape">#</a> `isLandscape` &lt;[boolean][]&gt; Specifies whether the viewport is in landscape mode (default: `false`).
@@ -133,6 +133,9 @@ timesnap({
         * `screenshotData` &lt;[Buffer][]&gt; A buffer of the screenshot data.
         * `frameNumber` &lt;[number][]&gt; The current frame number (1 based).
         * `totalFrames` &lt;[number][]&gt; The total number of frames.
+    * <a name="js-config-navigate-page-to-url" href="#js-config-navigate-page-to-url">#</a> `navigatePageToURL` &lt;[function][]([Object][])&gt; A function that navigates a puppeteer page to a URL, overriding the default navigation to a URL. The function should return a promise that resolves once the page is finished navigating. The function is passed the following object:
+        * <a name="js-config-navigate-page-to-url-page" href="#js-config-navigate-page-to-url-page">#</a> `page` &lt;[Page][]&gt; the puppeteer page
+        * <a name="js-config-navigate-page-to-url-url" href="#js-config-navigate-page-to-url-url">#</a> `url` &lt;[string][]&gt; the url to navigate to
     * <a name="js-config-prepare-page" href="#js-config-prepare-page">#</a> `preparePage` &lt;[function][]([Page][])&gt; A setup function that will be called one time before taking screenshots. If it returns a promise, capture will be paused until the promise resolves.
         * `page` &lt;[Page][]&gt; The puppeteer instance of the page being captured.
     * <a name="js-config-prepare-page-for-screenshot" href="#js-config-prepare-page-for-screenshot">#</a> `preparePageForScreenshot` &lt;[function][]([Page][], [number][], [number][])&gt; A setup function that will be called before each screenshot. If it returns a promise, capture will be paused until the promise resolves.
