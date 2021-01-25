@@ -34,9 +34,7 @@ const path = require('path');
 const defaultDuration = 5;
 const defaultFPS = 60;
 const { overwriteRandom } = require('./lib/overwrite-random');
-const { promiseLoop, getBrowserFrames } = require('./lib/utils');
-const initializePageUtils = require('./lib/page-utils');
-const initializeMediaTimeHandler = require('./lib/media-time-handler');
+const { promiseLoop, getBrowserFrames, stringArrayFind } = require('./lib/utils');
 
 
 module.exports = function (config) {
@@ -50,7 +48,7 @@ module.exports = function (config) {
   var framesToCapture;
   var outputPath = path.resolve(process.cwd(), (config.outputDirectory || './'));
 
-  if (url.indexOf('://') === -1) {
+  if (!url.includes('://')) {
     // assume it is a file path
     url = 'file://' + path.resolve(process.cwd(), url);
   }
@@ -80,7 +78,7 @@ module.exports = function (config) {
 
   if (!frameNumToTime) {
     frameNumToTime = function (frameCount) {
-      return (frameCount-1) * frameDuration;
+      return (frameCount - 1) * frameDuration;
     };
   }
 
@@ -148,13 +146,17 @@ module.exports = function (config) {
         log('Capture Mode: Screenshot');
       }
       return Promise.resolve().then(function () {
-        if (config.viewport) {
-          if (!config.viewport.width) {
-            config.viewport.width = page.viewport().width;
-          }
-          if (!config.viewport.height) {
-            config.viewport.height = page.viewport().height;
-          }
+        var scaleArg = stringArrayFind(launchOptions.args, '--force-device-scale-factor') ||
+          stringArrayFind(launchOptions.args, '--device-scale-factor');
+        if (config.viewport || scaleArg) {
+          config.viewport = Object.assign(
+            {
+              width: page.viewport().width,
+              height: page.viewport().height,
+              deviceScaleFactor: scaleArg ? Number(scaleArg.split('=')[1]) || 1 : 1
+            },
+            config.viewport
+          );
           return page.setViewport(config.viewport);
         }
       }).then(function () {
@@ -162,12 +164,12 @@ module.exports = function (config) {
       }).then(function () {
         return timeHandler.overwriteTime(page);
       }).then(function () {
-        return initializePageUtils(page);
-      }).then(function () {
-        return initializeMediaTimeHandler(page);
-      }).then(function () {
-        log('Going to ' + url + '...');
-        return page.goto(url, { waitUntil: 'networkidle0' });
+        if (typeof config.navigatePageToURL === 'function') {
+          return config.navigatePageToURL({ page, url, log });
+        } else {
+          log('Going to ' + url + '...');
+          return page.goto(url, { waitUntil: 'networkidle0' });
+        }
       }).then(function () {
         log('Page loaded');
         if ('preparePage' in config) {
