@@ -2,6 +2,8 @@
 
 **timesnap** is a Node.js program that records screenshots of web pages that use JavaScript animations. It uses [puppeteer](https://github.com/GoogleChrome/puppeteer) to open a web page, overwrite its time-handling functions, and record snapshots at virtual times. For some web pages, this allows frames to be recorded slower than real time, while appearing smooth and consistent when recreated into a video.
 
+It requires Node v8.9.0 or higher and npm.
+
 # timesnap-core
 
 **timesnap-core** is a version of timesnap that does not automatically bundle puppeteer. It differs from `timesnap` by requiring a [`config.launcher`](#js-config-launcher) function or a [`config.browser`](#js-config-browser) object to be passed, and does not have a command line interface. It's stored on the [`core`](https://github.com/tungs/timesnap/tree/core#timesnap-core) branch of `timesnap` and derived from its code. All pull requests should be based on the main branch of `timesnap` instead of this branch, unless in the rare event that it's particular only to this branch.
@@ -30,7 +32,7 @@ npm install timesnap-core --save
 
 ### <a name="node-examples" href="#node-examples">#</a> Node Examples
 
-For these examples, we'll use puppeteer version 2.1.1, which doesn't require additional libraries to be installed.
+For these examples, we'll use puppeteer version 2.1.1, which requires fewer additional libraries to be installed.
 
 ```
 npm install puppeteer@2.1.1 --save
