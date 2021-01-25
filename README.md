@@ -81,7 +81,7 @@ Opens `index.html` in the current working directory, sets the viewport to 800x60
 
 **<a name="cli-example-viewport-fps-duration-output" href="#cli-example-viewport-fps-duration-output">#</a> Setting viewport size, frames per second, duration, and output pattern**:
 ```
-timesnap index.html --viewport=800,600 --fps=60 --duration=5 --output-pattern="%03d.png"
+timesnap index.html --viewport="800,600" --fps=60 --duration=5 --output-pattern="%03d.png"
 ```
 Equivalent to the current default `timesnap` invocation, but with explicit options. Opens `index.html` in the current working directory, sets the viewport to 800x600, captures at 60 frames per second for 5 virtual seconds, and saves the frames to `001.png` to `300.png` in the current working directory.
 
@@ -103,7 +103,7 @@ Opens https://tungs.github.io/truchet-tiles-original/#autoplay=true&switchStyle=
 **<a name="cli-example-piping" href="#cli-example-piping">#</a> Piping**:
 ```
 timesnap https://breathejs.org/examples/Drawing-US-Counties.html \
-  -V 1920,1080 -S "#draw-canvas" --fps=60 --duration=10 \
+  -V "1920,1080" -S "#draw-canvas" --fps=60 --duration=10 \
   --round-to-even-width --round-to-even-height \
   --output-stdout | ffmpeg -framerate 60 -i pipe:0 -y -pix_fmt yuv420p video.mp4
 ```
@@ -123,7 +123,7 @@ Opens https://breathejs.org/examples/Drawing-US-Counties.html, sets the viewport
 * <a name="cli-options-selector" href="#cli-options-selector">#</a> Selector: `-S`, `--selector` "*selector*"
     * Crops each frame to the bounding box of the first item found by the [CSS *selector*][CSS selector].
 * <a name="cli-options-viewport" href="#cli-options-viewport">#</a> Viewport: `-V`, `--viewport` *dimensions,otherOptions*
-    * Viewport dimensions, in pixels, followed by optional keys. For example, `800` (for width), or `800,600` (for width and height), or `800,600,deviceScaleFactor=2` for (width, height, and deviceScaleFactor). For a list of optional keys, see [`config.viewport`](#js-config-viewport).
+    * Viewport dimensions, in pixels, followed by optional keys. For example, `800` (for width), or `"800,600"` (for width and height), or `"800,600,deviceScaleFactor=2"` for (width, height, and deviceScaleFactor). When running in Windows, quotes may be necessary for parsing commas. For a list of optional keys, see [`config.viewport`](#js-config-viewport).
 * <a name="cli-options-canvas-capture-mode" href="#cli-options-canvas-capture-mode">#</a> Canvas Capture Mode: `--canvas-capture-mode` *\[format\]*
     * Experimental. Captures images from canvas data instead of screenshots. See [canvas capture mode](#canvas-capture-mode). Can provide an optional image format (e.g. `png`), otherwise it uses the saved image's extension, or defaults to `png` if the format is not specified or supported. Can prefix the format with `immediate:` (e.g. `immediate:png`) to immediately capture pixel data after rendering, which is sometimes needed for some WebGL renderers. Specify the canvas [using the `--selector` option](#cli-options-selector), otherwise it defaults to the first canvas in the document.
 * <a name="cli-options-start" href="#cli-options-start">#</a> Start: `-s`, `--start` *n seconds*
