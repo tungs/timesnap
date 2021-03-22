@@ -170,8 +170,8 @@ module.exports = function (config) {
       }).then(function () {
         return timeHandler.overwriteTime(page);
       }).then(function () {
-          // page can call window.stopCapture to stop capture before --duration is up
-          return page.exposeFunction('stopCapture', () => requestStopCapture = true);
+        // page can call window.stopCapture to stop capture before --duration is up
+        return page.exposeFunction('stopCapture', () => requestStopCapture = true);
       }).then(function () {
         if (typeof config.navigatePageToURL === 'function') {
           return config.navigatePageToURL({ page, url, log });
@@ -258,7 +258,6 @@ module.exports = function (config) {
             markerIndex = markers.length;
             return Promise.resolve();
           }
-          
           var marker = markers[markerIndex];
           var p;
 
