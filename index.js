@@ -47,6 +47,7 @@ module.exports = function (config) {
   var unrandom = config.unrandomize;
   var fps = config.fps, frameDuration;
   var framesToCapture;
+  var requestStopCapture = false;
   var outputPath = path.resolve(process.cwd(), (config.outputDirectory || './'));
 
   if (!url.includes('://')) {
@@ -169,6 +170,9 @@ module.exports = function (config) {
       }).then(function () {
         return timeHandler.overwriteTime(page);
       }).then(function () {
+          // page can call window.stopCapture to stop capture before --duration is up
+          return page.exposeFunction('stopCapture', () => requestStopCapture = true);
+      }).then(function () {
         if (typeof config.navigatePageToURL === 'function') {
           return config.navigatePageToURL({ page, url, log });
         } else {
@@ -250,6 +254,11 @@ module.exports = function (config) {
         return promiseLoop(function () {
           return markerIndex < markers.length;
         }, function () {
+          if (requestStopCapture) {
+            markerIndex = markers.length;
+            return Promise.resolve();
+          }
+          
           var marker = markers[markerIndex];
           var p;
 

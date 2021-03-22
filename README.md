@@ -22,6 +22,7 @@ To record screenshots and compile them into a video using only one command, see 
   * [Node Examples](#node-examples)
   * [Node API](#node-api)
 * [timesnap Modes](#modes)
+* [Control from page](#controlFromPage)
 * [How it works](#how-it-works)
 
 ## <a name="from-cli" href="#from-cli">#</a> From the Command Line
@@ -301,6 +302,11 @@ The Node API is structured similarly to the command line options, but there are 
 **timesnap** can capture frames using one of two modes:
   * <a name="screenshot-capture-mode" href="#screenshot-capture-mode">#</a> **Screenshot capture mode** (default) uses puppeteer's built-in API to take screenshots of Chromium/Chrome windows. It can capture most parts of a webpage (e.g. div, svg, canvas) as they are rendered on the webpage. It can crop images, round to even widths/heights, but it usually runs slower than canvas capture mode.
   * <a name="canvas-capture-mode" href="#canvas-capture-mode">#</a> **Canvas capture mode** (experimental) directly copies data from a canvas element and is often faster than using screenshot capture mode. If the background of the canvas is transparent, it may show up as transparent or black depending on the captured image format. Configuration options that adjust the crop and round to an even width/height do not currently have an effect. To use this mode, [use the `--canvas-capture-mode` option from the command line](#cli-options-canvas-capture-mode) or [set `config.canvasCaptureMode` from Node.js](#js-config-canvas-capture-mode). Also specify the canvas using a css selector, [using the `--selector` option from the command line](#cli-options-selector) or [setting `config.selector` from Node.js](#js-config-selector), otherwise it uses the first canvas element.
+
+## <a name="controlFromPage" href="#controlFromPage">#</a> Control From Page
+The captured page can call window.stopCapture() to end the capture process before `--duration` or `--frames` is up. Useful if you don't know ahead of time how long a capture should take (set a long enough duration and call stopCapture when finished).
+
+Use `if (window.stopCapture) window.stopCapture();` to avoid javasript errors when page is not loaded via **timesnap**.
 
 ## <a name="how-it-works" href="#how-it-works">#</a> How it works
 **timesnap** uses puppeteer's `page.evaluateOnNewDocument` feature to automatically overwrite a page's native time-handling JavaScript functions and objects (`new Date()`, `Date.now`, `performance.now`, `requestAnimationFrame`, `setTimeout`, `setInterval`, `cancelAnimationFrame`, `cancelTimeout`, and `cancelInterval`) to custom ones that use a virtual timeline, allowing for JavaScript computation to complete before taking a screenshot.
