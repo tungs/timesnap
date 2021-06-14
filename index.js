@@ -170,8 +170,10 @@ module.exports = function (config) {
       }).then(function () {
         return timeHandler.overwriteTime(page);
       }).then(function () {
-        // page can call window.stopCapture to stop capture before --duration is up
-        return page.exposeFunction('stopCapture', () => requestStopCapture = true);
+        // page can call the function with config.stopFunctionName to stop capture before --duration is up
+        if (config.stopFunctionName) {
+          return page.exposeFunction(config.stopFunctionName, () => requestStopCapture = true);
+        }
       }).then(function () {
         if (typeof config.navigatePageToURL === 'function') {
           return config.navigatePageToURL({ page, url, log });
@@ -252,12 +254,8 @@ module.exports = function (config) {
         var startCaptureTime = new Date().getTime();
         var markerIndex = 0;
         return promiseLoop(function () {
-          return markerIndex < markers.length;
+          return markerIndex < markers.length && !requestStopCapture;
         }, function () {
-          if (requestStopCapture) {
-            markerIndex = markers.length;
-            return Promise.resolve();
-          }
           var marker = markers[markerIndex];
           var p;
 
