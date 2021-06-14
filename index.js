@@ -47,6 +47,7 @@ module.exports = function (config) {
   var unrandom = config.unrandomize;
   var fps = config.fps, frameDuration;
   var framesToCapture;
+  var requestStopCapture = false;
   var outputPath = path.resolve(process.cwd(), (config.outputDirectory || './'));
 
   if (!url.includes('://')) {
@@ -169,6 +170,11 @@ module.exports = function (config) {
       }).then(function () {
         return timeHandler.overwriteTime(page);
       }).then(function () {
+        // page can call the function with config.stopFunctionName to stop capture before --duration is up
+        if (config.stopFunctionName) {
+          return page.exposeFunction(config.stopFunctionName, () => requestStopCapture = true);
+        }
+      }).then(function () {
         if (typeof config.navigatePageToURL === 'function') {
           return config.navigatePageToURL({ page, url, log });
         } else {
@@ -248,7 +254,7 @@ module.exports = function (config) {
         var startCaptureTime = new Date().getTime();
         var markerIndex = 0;
         return promiseLoop(function () {
-          return markerIndex < markers.length;
+          return markerIndex < markers.length && !requestStopCapture;
         }, function () {
           var marker = markers[markerIndex];
           var p;
