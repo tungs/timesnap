@@ -34,7 +34,7 @@ const path = require('path');
 const defaultDuration = 5;
 const defaultFPS = 60;
 const { overwriteRandom } = require('./lib/overwrite-random');
-const { getBrowserFrames, stringArrayFind } = require('./lib/utils');
+const { getBrowserFrames, stringArrayFind, getPageViewportSize, setPageViewportSize } = require('./lib/utils');
 
 module.exports = async function (config) {
   config = Object.assign({}, config || {});
@@ -150,13 +150,13 @@ module.exports = async function (config) {
     if (config.viewport || scaleArg) {
       config.viewport = Object.assign(
         {
-          width: page.viewport().width,
-          height: page.viewport().height,
+          width: getPageViewportSize(page).width,
+          height: getPageViewportSize(page).height,
           deviceScaleFactor: scaleArg ? Number(scaleArg.split('=')[1]) || 1 : 1
         },
         config.viewport
       );
-      await page.setViewport(config.viewport);
+      await setPageViewportSize(page, config.viewport);
     }
     await overwriteRandom(page, unrandom, log);
     await timeHandler.overwriteTime(page);
