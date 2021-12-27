@@ -23,7 +23,7 @@
   "dependencies": {
     "commander": "^2.11.0",
     "puppeteer": "^2.1.1",
-    "timeweb": "^0.2.0",
+    "timeweb": "^0.2.1",
     "sprintf-js": "1.1.1"
   },
   "devDependencies": {
