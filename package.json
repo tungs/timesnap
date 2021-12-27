@@ -1,6 +1,6 @@
 {
   "name": "timesnap-core",
-  "version": "0.3.2-prerelease",
+  "version": "0.3.2",
   "description": "Take screenshots of web pages at smooth intervals",
   "repository": {
     "type": "git",
@@ -18,7 +18,7 @@
   },
   "license": "BSD-3-Clause",
   "dependencies": {
-    "timeweb": "^0.2.0",
+    "timeweb": "^0.2.1",
     "sprintf-js": "1.1.1"
   },
   "devDependencies": {
