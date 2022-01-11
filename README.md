@@ -93,12 +93,12 @@ Opens `drawing.html` in the current working directory, crops each frame to the b
 
 **<a name="cli-example-offsets" href="#cli-example-offsets">#</a> Using offsets**:
 ```
-timesnap "https://tungs.github.io/truchet-tiles-original/#autoplay=true&switchStyle=random" \ 
+timesnap "https://tungs.github.io/amuse/truchet-tiles/#autoplay=true&switchStyle=random" \ 
   -S "#container" \ 
   --left=20 --top=40 --right=6 --bottom=30 \
   --duration=20 --output-directory=frames
 ```
-Opens https://tungs.github.io/truchet-tiles-original/#autoplay=true&switchStyle=random (note the quotes in the url are necessary because of the `#` and `&`). Crops each frame to the `#container` element, with an additional crop of 20px, 40px, 6px, and 30px for the left, top, right, and bottom, respectively. Captures frames for 20 virtual seconds at 60fps to `frames/0001.png`... `frames/1200.png` in the current working directory, making the directory `frames` if needed.
+Opens https://tungs.github.io/amuse/truchet-tiles/#autoplay=true&switchStyle=random (note the quotes in the url are necessary because of the `#` and `&`). Crops each frame to the `#container` element, with an additional crop of 20px, 40px, 6px, and 30px for the left, top, right, and bottom, respectively. Captures frames for 20 virtual seconds at 60fps to `frames/0001.png`... `frames/1200.png` in the current working directory, making the directory `frames` if needed.
 
 **<a name="cli-example-piping" href="#cli-example-piping">#</a> Piping**:
 ```
@@ -191,7 +191,7 @@ npm install timesnap --save
 ```node
 const timesnap = require('timesnap');
 timesnap({
-  url: 'https://tungs.github.io/truchet-tiles-original/#autoplay=true&switchStyle=random',
+  url: 'https://tungs.github.io/amuse/truchet-tiles/#autoplay=true&switchStyle=random',
   viewport: {
     width: 800,               // sets the viewport (window size) to 800x600
     height: 600
@@ -213,7 +213,7 @@ timesnap({
 const timesnap = require('timesnap');
 var pages = [
   {
-    url: 'https://tungs.github.io/truchet-tiles-original/#autoplay=true',
+    url: 'https://tungs.github.io/amuse/truchet-tiles/#autoplay=true',
     outputDirectory: 'truchet-tiles'
   }, {
     url: 'https://breathejs.org/examples/Drawing-US-Counties.html',
