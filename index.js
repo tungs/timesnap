@@ -175,6 +175,9 @@ module.exports = async function (config) {
       await page.goto(url, { waitUntil: 'networkidle0' });
     }
     log('Page loaded');
+    if (timeHandler.preparePage) {
+      await timeHandler.preparePage({ page, url, log });
+    }
     if ('preparePage' in config) {
       log('Preparing page before screenshots...');
       await Promise.resolve(config.preparePage(page));
