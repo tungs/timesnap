@@ -35,7 +35,7 @@ const path = require('path');
 const defaultDuration = 5;
 const defaultFPS = 60;
 const { overwriteRandom } = require('./lib/overwrite-random');
-const { getBrowserFrames, stringArrayFind, getPageViewportSize, setPageViewportSize } = require('./lib/utils');
+const { stringArrayFind, getPageViewportSize, setPageViewportSize } = require('./lib/utils');
 
 module.exports = async function (config) {
   config = Object.assign({}, config || {});
