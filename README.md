@@ -93,8 +93,8 @@ Opens `drawing.html` in the current working directory, crops each frame to the b
 
 **<a name="cli-example-offsets" href="#cli-example-offsets">#</a> Using offsets**:
 ```
-timesnap "https://tungs.github.io/amuse/truchet-tiles/#autoplay=true&switchStyle=random" \ 
-  -S "#container" \ 
+timesnap "https://tungs.github.io/amuse/truchet-tiles/#autoplay=true&switchStyle=random" \
+  -S "#container" \
   --left=20 --top=40 --right=6 --bottom=30 \
   --duration=20 --output-directory=frames
 ```
@@ -200,7 +200,7 @@ timesnap({
   left: 20, top: 40,          // further crops the left by 20px, and the top by 40px
   right: 6, bottom: 30,       // and the right by 6px, and the bottom by 30px
   fps: 30,                    // saves 30 frames for each virtual second
-  duration: 20,               // for 20 virtual seconds 
+  duration: 20,               // for 20 virtual seconds
   outputDirectory: 'frames'   // to frames/001.png... frames/600.png
                               // of the current working directory
 }).then(function () {
