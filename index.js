@@ -188,7 +188,6 @@ module.exports = async function (config) {
         setTimeout(resolve, startWaitMs);
       });
     }
-    var browserFrames = getBrowserFrames(page.mainFrame());
     var captureTimes = [];
     if (capturer.beforeCapture) {
       // run beforeCapture right before any capture frames
@@ -251,7 +250,7 @@ module.exports = async function (config) {
       var marker = markers[markerIndex];
       markerIndex++;
       if (marker.type === 'Capture') {
-        await timeHandler.goToTimeAndAnimateForCapture(browserFrames, marker.time);
+        await timeHandler.goToTimeAndAnimateForCapture(page, marker.time);
         var skipCurrentFrame;
         if (config.shouldSkipFrame) {
           skipCurrentFrame = await config.shouldSkipFrame({
@@ -273,7 +272,7 @@ module.exports = async function (config) {
           }
         }
       } else if (marker.type === 'Only Animate') {
-        await timeHandler.goToTimeAndAnimate(browserFrames, marker.time);
+        await timeHandler.goToTimeAndAnimate(page, marker.time);
       } else if (marker.type === 'Run Function') {
         await marker.data.fn(marker);
       }
