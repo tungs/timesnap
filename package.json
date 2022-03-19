@@ -24,6 +24,7 @@
     "commander": "^2.11.0",
     "puppeteer": "^2.1.1",
     "timeweb": "0.3.0",
+    "unrandomize": "0.1.0",
     "sprintf-js": "1.1.1"
   },
   "devDependencies": {
