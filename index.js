@@ -1,7 +1,7 @@
 /**
  * BSD 3-Clause License
  *
- * Copyright (c) 2018-2021, Steve Tung
+ * Copyright (c) 2018-2022, Steve Tung
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,7 @@ const path = require('path');
 const defaultDuration = 5;
 const defaultFPS = 60;
 const { overwriteRandom } = require('./lib/overwrite-random');
-const { getBrowserFrames, stringArrayFind, getPageViewportSize, setPageViewportSize } = require('./lib/utils');
+const { stringArrayFind, getPageViewportSize, setPageViewportSize } = require('./lib/utils');
 
 module.exports = async function (config) {
   config = Object.assign({}, config || {});
@@ -170,6 +170,9 @@ module.exports = async function (config) {
       await page.goto(url, { waitUntil: 'networkidle0' });
     }
     log('Page loaded');
+    if (timeHandler.preparePage) {
+      await timeHandler.preparePage({ page, url, log });
+    }
     if ('preparePage' in config) {
       log('Preparing page before screenshots...');
       await Promise.resolve(config.preparePage(page));
@@ -180,7 +183,6 @@ module.exports = async function (config) {
         setTimeout(resolve, startWaitMs);
       });
     }
-    var browserFrames = getBrowserFrames(page.mainFrame());
     var captureTimes = [];
     if (capturer.beforeCapture) {
       // run beforeCapture right before any capture frames
@@ -243,7 +245,7 @@ module.exports = async function (config) {
       var marker = markers[markerIndex];
       markerIndex++;
       if (marker.type === 'Capture') {
-        await timeHandler.goToTimeAndAnimateForCapture(browserFrames, marker.time);
+        await timeHandler.goToTimeAndAnimateForCapture(page, marker.time);
         var skipCurrentFrame;
         if (config.shouldSkipFrame) {
           skipCurrentFrame = await config.shouldSkipFrame({
@@ -265,7 +267,7 @@ module.exports = async function (config) {
           }
         }
       } else if (marker.type === 'Only Animate') {
-        await timeHandler.goToTimeAndAnimate(browserFrames, marker.time);
+        await timeHandler.goToTimeAndAnimate(page, marker.time);
       } else if (marker.type === 'Run Function') {
         await marker.data.fn(marker);
       }
