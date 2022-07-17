@@ -95,6 +95,7 @@ commander
     // TODO: make a more sophisticated parser for options that can handle quote marks
     return str.split(' ');
   })
+  .option('--start-function-name <function name>', 'Allows client page to call function name to start capture')
   .option('--stop-function-name <function name>', 'Allows client page to call function name to stop capture')
   .option('--no-headless', 'Chromium/Chrome runs in a window instead of headless mode')
   .option('--screenshot-type <type>', 'Output image format for screenshots, either png or jpeg')

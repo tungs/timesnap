@@ -170,6 +170,8 @@ Opens https://breathejs.org/examples/Drawing-US-Counties.html, sets the viewport
     * Suppresses console logging.
 * <a name="cli-options-output-stdout" href="#cli-options-output-stdout">#</a> Output stdout: `--output-stdout`
     * Outputs images to stdout. Useful for piping.
+* <a name="cli-options-start-function-name" href="#cli-options-start-function-name">#</a> Start Function Name: `--start-function-name` *function name*
+    * Creates a function with *function name* that the client web page can call to start capturing. For instance, `--start-function-name=startCapture` could be called in the client, via `startCapture()`. But the [`--start` option] will not work.
 * <a name="cli-options-stop-function-name" href="#cli-options-stop-function-name">#</a> Stop Function Name: `--stop-function-name` *function name*
     * Creates a function with *function name* that the client web page can call to stop capturing. For instance, `--stop-function-name=stopCapture` could be called in the client, via `stopCapture()`.
 * <a name="cli-options-version" href="#cli-options-version">#</a> Version: `-v`, `--version`
@@ -284,6 +286,8 @@ The Node API is structured similarly to the command line options, but there are 
         * <a name="js-config-should-skip-frame-frame-count" href="#js-config-should-skip-frame-frame-count">#</a> `frameCount` &lt;[number][]&gt; The current frame count, starting at 1.
         * <a name="js-config-should-skip-frame-frames-to-capture" href="#js-config-should-skip-frame-frames-to-capture">#</a> `framesToCapture` &lt;[number][]&gt; The total number of frames to be captured.
         * <a name="js-config-should-skip-frame-page" href="#js-config-should-skip-frame-page">#</a> `page` &lt;[Page][]&gt; the puppeteer page.
+    
+    * <a name="js-config-start-function-name" href="#js-config-start-function-name">#</a> `startFunctionName` &lt;[string][]&gt; *function name* that the client web page can call to start capturing. For instance, `'startCapture'` could be called in the client, via `startCapture()`. But the [`--start` option] will not work.
     * <a name="js-config-stop-function-name" href="#js-config-stop-function-name">#</a> `stopFunctionName` &lt;[string][]&gt; *function name* that the client web page can call to stop capturing. For instance, `'stopCapture'` could be called in the client, via `stopCapture()`.
     * <a name="js-config-frame-processor" href="#js-config-frame-processor">#</a> `frameProcessor` &lt;[function][]([Buffer][], [number][], [number][])&gt; A function that will be called after capturing each frame. If `config.outputDirectory` and `config.outputPattern` aren't specified, enabling this suppresses automatic file output. After capturing each frame, `config.frameProcessor` is called with three arguments, and if it returns a promise, capture will be paused until the promise resolves:
         * `screenshotData` &lt;[Buffer][]&gt; A buffer of the screenshot data.
