@@ -99,6 +99,7 @@ module.exports = async function (config) {
 
   const launchOptions = {
     dumpio: !config.quiet && !config.logToStdErr,
+    handleSIGINT: (config.handleSIGINT !== undefined ? config.handleSIGINT : true),
     headless: (config.headless !== undefined ? config.headless : true),
     executablePath: config.executablePath,
     args: config.launchArguments || []
