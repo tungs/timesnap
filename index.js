@@ -172,7 +172,7 @@ module.exports = async function (config) {
       await config.navigatePageToURL({ page, url, log });
     } else {
       log('Going to ' + url + '...');
-      await page.goto(url, { waitUntil: 'networkidle0' });
+      await page.goto(url, { waitUntil: config.waitUntil || 'networkidle0' });
     }
     log('Page loaded');
     if (timeHandler.preparePage) {
