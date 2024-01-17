@@ -281,7 +281,11 @@ module.exports = async function (config) {
     if (capturer.afterCapture) {
       await capturer.afterCapture();
     }
-    await browser.close();
+    if (config.remoteUrl) {
+      await browser.disconnect();
+    } else {
+      await browser.close();
+    }
   }
   try {
     await run();
